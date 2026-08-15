@@ -1,7 +1,7 @@
 import express from 'express';
 import path from 'path';
 import fs from 'fs';
-import { createServer as createViteServer } from 'vite';
+import os from 'os';
 import { INITIAL_SCHOOLS, INITIAL_COMPETITIONS, INITIAL_JUDGES, INITIAL_SETTINGS } from './src/data/seedData';
 import { School, Competition, Judge, ScoreRecord, ActivityLog, AppSettings } from './src/types';
 import { syncDataToGoogleSheets } from './src/server/googleSheetsService';
@@ -27,8 +27,10 @@ const PORT = 3000;
 
 app.use(express.json({ limit: '10mb' }));
 
-// File persistence path
-const DATA_FILE = path.join(process.cwd(), 'data_storage.json');
+// File persistence path (supports both local/container and Vercel serverless /tmp)
+const DATA_FILE = process.env.VERCEL
+  ? path.join(os.tmpdir(), 'data_storage.json')
+  : path.join(process.cwd(), 'data_storage.json');
 
 // Memory Database
 let schoolsData: School[] = [...INITIAL_SCHOOLS];
@@ -41,8 +43,14 @@ let settingsData: AppSettings = { ...INITIAL_SETTINGS };
 // Load persistent data if exists
 function loadStorage() {
   try {
-    if (fs.existsSync(DATA_FILE)) {
-      const raw = fs.readFileSync(DATA_FILE, 'utf-8');
+    const targetFile = fs.existsSync(DATA_FILE)
+      ? DATA_FILE
+      : fs.existsSync(path.join(process.cwd(), 'data_storage.json'))
+      ? path.join(process.cwd(), 'data_storage.json')
+      : null;
+
+    if (targetFile) {
+      const raw = fs.readFileSync(targetFile, 'utf-8');
       const parsed = JSON.parse(raw);
       if (parsed.schools && parsed.schools.length > 0) schoolsData = parsed.schools;
       if (parsed.competitions && parsed.competitions.length > 0) competitionsData = parsed.competitions;
@@ -71,7 +79,13 @@ function saveStorage() {
       logs: logsData,
       settings: settingsData,
     };
-    fs.writeFileSync(DATA_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+    try {
+      fs.writeFileSync(DATA_FILE, JSON.stringify(payload, null, 2), 'utf-8');
+    } catch (writeErr) {
+      // Fallback for read-only environments
+      const tmpFile = path.join(os.tmpdir(), 'data_storage.json');
+      fs.writeFileSync(tmpFile, JSON.stringify(payload, null, 2), 'utf-8');
+    }
   } catch (err) {
     console.error('Failed to save data storage:', err);
   }
@@ -920,7 +934,8 @@ app.post('/api/backup/restore', (req, res) => {
 
 async function startServer() {
   try {
-    if (process.env.NODE_ENV !== 'production') {
+    if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+      const { createServer: createViteServer } = await import('vite');
       const vite = await createViteServer({
         server: { middlewareMode: true },
         appType: 'spa',
@@ -942,4 +957,11 @@ async function startServer() {
   }
 }
 
-startServer();
+// In standard container/local environments, start the HTTP server.
+// In Vercel serverless environment, Vercel wraps the exported app directly.
+if (!process.env.VERCEL) {
+  startServer();
+}
+
+export default app;
+export { app };

@@ -22,6 +22,9 @@ import {
   ExternalLink,
   Layers,
   Trophy,
+  Globe,
+  Copy,
+  Check,
 } from 'lucide-react';
 
 interface SettingsViewProps {
@@ -56,6 +59,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onRefresh,
   const [clearPassword, setClearPassword] = useState('');
   const [isClearing, setIsClearing] = useState(false);
   const [clearErrorMsg, setClearErrorMsg] = useState('');
+  const [copiedVercel, setCopiedVercel] = useState(false);
 
   const loadFbStatus = async () => {
     try {
@@ -500,6 +504,80 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onRefresh,
               <ExternalLink className="w-3.5 h-3.5" />
             </a>
           </div>
+        </div>
+      </div>
+
+      {/* Vercel Online Deployment Card */}
+      <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white p-6 rounded-2xl border border-slate-700 shadow-md space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-700 pb-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-xl bg-white text-slate-950 flex items-center justify-center font-black shadow-md">
+              <Globe className="w-6 h-6 text-slate-950" />
+            </div>
+            <div>
+              <h3 className="text-base font-black tracking-tight flex items-center gap-2">
+                <span>Publikasi Online ke Vercel (.vercel.app)</span>
+                <span className="inline-flex items-center gap-1 text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-ping"></span>
+                  Siap Deploy
+                </span>
+              </h3>
+              <p className="text-xs text-slate-300 mt-0.5">
+                Konfigurasi <code>vercel.json</code> dan Serverless API <code>/api</code> telah aktif & terkonfigurasi.
+              </p>
+            </div>
+          </div>
+
+          <a
+            href="https://vercel.com/new"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-white hover:bg-slate-100 text-slate-950 font-black text-xs rounded-xl shadow-md flex items-center gap-2 transition-all shrink-0 cursor-pointer"
+          >
+            <span>Buka Dashboard Vercel</span>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 text-xs">
+          <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">1. Export / Push</span>
+            <p className="text-slate-200 text-[11px] leading-relaxed">
+              Export proyek ke <strong>GitHub</strong> via menu Settings AI Studio, atau upload file project.
+            </p>
+          </div>
+
+          <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">2. Import di Vercel</span>
+            <p className="text-slate-200 text-[11px] leading-relaxed">
+              Pilih repository Anda. Framework preset: <strong>Vite</strong>, Build Command: <code>vite build</code>.
+            </p>
+          </div>
+
+          <div className="p-3 bg-slate-800/80 rounded-xl border border-slate-700 space-y-1">
+            <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">3. Database Firestore</span>
+            <p className="text-slate-200 text-[11px] leading-relaxed">
+              Semua nilai juri & master data langsung terhubung ke Google Cloud Firestore (<code>penilaianjamrankuningan</code>).
+            </p>
+          </div>
+        </div>
+
+        <div className="p-3.5 bg-slate-950/70 border border-slate-800 rounded-xl flex items-center justify-between gap-3 text-xs">
+          <div className="truncate font-mono text-[11px] text-slate-300">
+            <span className="text-emerald-400 font-bold">CLI Deploy:</span> <code>npm install -g vercel && vercel --prod</code>
+          </div>
+          <button
+            type="button"
+            onClick={() => {
+              navigator.clipboard.writeText('npm install -g vercel && vercel --prod');
+              setCopiedVercel(true);
+              setTimeout(() => setCopiedVercel(false), 2000);
+            }}
+            className="px-3 py-1 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg text-[11px] font-bold flex items-center gap-1.5 shrink-0 transition-all cursor-pointer"
+          >
+            {copiedVercel ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            <span>{copiedVercel ? 'Disalin!' : 'Salin Perintah'}</span>
+          </button>
         </div>
       </div>
 

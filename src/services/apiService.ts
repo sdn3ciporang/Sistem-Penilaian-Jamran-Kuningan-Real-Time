@@ -33,7 +33,7 @@ export class ApiService {
           return { schools: [], competitions: [], judges: [], scores: backupScores || [], settings: {}, logs: [] };
         } catch {}
       }
-      throw err;
+      return { schools: [], competitions: [], judges: [], scores: [], settings: {}, logs: [] };
     }
   }
 

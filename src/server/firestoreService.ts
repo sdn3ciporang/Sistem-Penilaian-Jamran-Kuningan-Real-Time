@@ -13,6 +13,20 @@ export interface FirebaseConfig {
 }
 
 export function getFirebaseConfig(): FirebaseConfig | null {
+  // 1. Check environment variables (e.g. Vercel deployment)
+  if (process.env.FIREBASE_PROJECT_ID && process.env.FIREBASE_API_KEY) {
+    return {
+      projectId: process.env.FIREBASE_PROJECT_ID,
+      apiKey: process.env.FIREBASE_API_KEY,
+      appId: process.env.FIREBASE_APP_ID || '',
+      authDomain: process.env.FIREBASE_AUTH_DOMAIN || `${process.env.FIREBASE_PROJECT_ID}.firebaseapp.com`,
+      firestoreDatabaseId: process.env.FIREBASE_DATABASE_ID || '(default)',
+      storageBucket: process.env.FIREBASE_STORAGE_BUCKET || `${process.env.FIREBASE_PROJECT_ID}.firebasestorage.app`,
+      messagingSenderId: process.env.FIREBASE_MESSAGING_SENDER_ID || '',
+    };
+  }
+
+  // 2. Check firebase-applet-config.json file
   try {
     const configPath = path.join(process.cwd(), 'firebase-applet-config.json');
     if (fs.existsSync(configPath)) {

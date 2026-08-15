@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { School, Competition, Judge, ScoreRecord, ActivityLog, AppSettings, TeamCategory } from './types';
+import { INITIAL_SCHOOLS, INITIAL_COMPETITIONS, INITIAL_JUDGES, INITIAL_SETTINGS } from './data/seedData';
 import { ApiService } from './services/apiService';
 import { Navbar } from './components/Navbar';
 import { JudgePortal } from './components/JudgePortal';
@@ -67,19 +68,63 @@ export default function App() {
     }
   });
 
-  // Data Collections
-  const [schools, setSchools] = useState<School[]>([]);
-  const [competitions, setCompetitions] = useState<Competition[]>([]);
-  const [judges, setJudges] = useState<Judge[]>([]);
-  const [scores, setScores] = useState<ScoreRecord[]>([]);
+  // Data Collections (initialized with instant local data so UI is never blank)
+  const [schools, setSchools] = useState<School[]>(() => {
+    try {
+      const cached = localStorage.getItem('pramuka_initial_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.schools && parsed.schools.length > 0) return parsed.schools;
+      }
+    } catch {}
+    return INITIAL_SCHOOLS;
+  });
+
+  const [competitions, setCompetitions] = useState<Competition[]>(() => {
+    try {
+      const cached = localStorage.getItem('pramuka_initial_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.competitions && parsed.competitions.length > 0) return parsed.competitions;
+      }
+    } catch {}
+    return INITIAL_COMPETITIONS;
+  });
+
+  const [judges, setJudges] = useState<Judge[]>(() => {
+    try {
+      const cached = localStorage.getItem('pramuka_initial_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.judges && parsed.judges.length > 0) return parsed.judges;
+      }
+    } catch {}
+    return INITIAL_JUDGES;
+  });
+
+  const [scores, setScores] = useState<ScoreRecord[]>(() => {
+    try {
+      const backup = localStorage.getItem('pramuka_scores_backup');
+      if (backup) return JSON.parse(backup);
+      const cached = localStorage.getItem('pramuka_initial_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.scores) return parsed.scores;
+      }
+    } catch {}
+    return [];
+  });
+
   const [logs, setLogs] = useState<ActivityLog[]>([]);
-  const [settings, setSettings] = useState<AppSettings>({
-    eventTitle: 'Sistem Penilaian Lomba Pramuka Real-Time',
-    defaultMinScore: 0,
-    defaultMaxScore: 100,
-    autoSyncIntervalSec: 5,
-    allowOffline: true,
-    theme: 'light',
+  const [settings, setSettings] = useState<AppSettings>(() => {
+    try {
+      const cached = localStorage.getItem('pramuka_initial_cache');
+      if (cached) {
+        const parsed = JSON.parse(cached);
+        if (parsed.settings && parsed.settings.eventTitle) return parsed.settings;
+      }
+    } catch {}
+    return INITIAL_SETTINGS;
   });
 
   // System UI States
