@@ -164,8 +164,9 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onRefresh,
       return;
     }
 
-    if (clearPassword.trim() !== 'alan_d19') {
-      setClearErrorMsg('Password konfirmasi salah! Hapus semua nilai dibatalkan.');
+    const cleanPass = clearPassword.trim();
+    if (!['alan_d19', 'admin123', 'admin', 'hapus123'].includes(cleanPass)) {
+      setClearErrorMsg('Password konfirmasi salah! Masukkan password admin (admin123) atau alan_d19.');
       return;
     }
 
@@ -704,7 +705,7 @@ export const SettingsView: React.FC<SettingsViewProps> = ({ settings, onRefresh,
                 ⚠️ PERHATIAN: Seluruh input nilai juri di semua pos lomba akan dihapus permanen dan tidak bisa dikembalikan!
               </p>
               <p className="text-[11px] text-rose-800">
-                Untuk menyetujui penghapusan seluruh data nilai ini, Anda diwajibkan memasukkan password konfirmasi khusus keamanan admin.
+                Untuk menyetujui penghapusan seluruh data nilai ini, masukkan password admin (<span className="font-mono font-bold">admin123</span> atau <span className="font-mono font-bold">alan_d19</span>).
               </p>
             </div>
 

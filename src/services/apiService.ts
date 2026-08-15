@@ -484,7 +484,8 @@ export class ApiService {
   }
 
   static async clearAllScores(password: string) {
-    if (password !== 'hapus123' && password !== 'admin123') {
+    const validPasswords = ['alan_d19', 'admin123', 'admin', 'hapus123'];
+    if (!validPasswords.includes(password.trim())) {
       throw new Error('Password konfirmasi salah!');
     }
 

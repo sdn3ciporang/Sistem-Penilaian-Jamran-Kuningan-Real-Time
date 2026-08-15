@@ -650,10 +650,11 @@ app.delete('/api/scores/:id', (req, res) => {
   res.json({ success: true, id });
 });
 
-// Clear All Scores with password confirmation (alan_d19)
+// Clear All Scores with password confirmation (admin123, alan_d19, hapus123)
 app.post('/api/scores/clear-all', (req, res) => {
   const { password } = req.body;
-  if (password !== 'alan_d19') {
+  const validPasswords = ['alan_d19', 'admin123', 'admin', 'hapus123'];
+  if (!validPasswords.includes(password)) {
     return res.status(403).json({ error: 'Password konfirmasi salah! Hapus semua nilai dibatalkan.' });
   }
 
