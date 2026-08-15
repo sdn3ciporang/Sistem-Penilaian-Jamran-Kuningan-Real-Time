@@ -410,7 +410,19 @@ export default function App() {
             settings={settings}
             initialCategory={judgeCategory}
             selectedSchoolIdProp={selectedSchoolForJudgeInput}
-            onScoreSaved={() => {
+            onScoreSaved={(savedRecord) => {
+              if (savedRecord) {
+                setScores((prev) => {
+                  const idx = prev.findIndex((s) => s.id === savedRecord.id);
+                  if (idx >= 0) {
+                    const updated = [...prev];
+                    updated[idx] = savedRecord;
+                    return updated;
+                  }
+                  return [...prev, savedRecord];
+                });
+              }
+              loadInitialData();
               updateOfflineCount();
               setSelectedSchoolForJudgeInput(null);
             }}

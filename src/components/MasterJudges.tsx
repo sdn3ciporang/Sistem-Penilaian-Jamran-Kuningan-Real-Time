@@ -274,7 +274,10 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
             parsedCat = 'PUTRI';
           }
 
+          const judgeId = 'judge_' + rawUsername.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+
           parsedJudges.push({
+            id: judgeId,
             name: rawName,
             username: rawUsername,
             password: rawPassword,
@@ -295,11 +298,11 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
       const res = await ApiService.saveJudgesBatch(parsedJudges);
 
       setUploadStatus(`Berhasil mengimpor ${res.count || parsedJudges.length} data juri!`);
+      onRefresh();
       setTimeout(() => {
         setUploadStatus('');
-      }, 4000);
-
-      onRefresh();
+        onRefresh();
+      }, 2000);
     } catch (err: any) {
       alert(`Gagal mengimpor file Excel: ${err.message || err}`);
       setUploadStatus('');

@@ -469,26 +469,34 @@ export const ScoreUploadModal: React.FC<ScoreUploadModalProps> = ({
     setUploadError(null);
 
     try {
-      const batchPayload = validRows.map((r) => ({
-        schoolId: r.schoolId,
-        teamCategory: r.teamCategory,
-        competitionId: r.competitionId,
-        subPostId: r.subPostId,
-        score: r.score,
-        timeInMs: r.timeInMs || 0,
-        timeFormatted: r.timeFormatted || '00:00:000',
-        judgeId: 'admin_upload',
-        judgeName: 'Administrator (Import Excel)',
-        posName: r.posName,
-      }));
+      const batchPayload = validRows.map((r) => {
+        const scoreId = `score-${r.schoolId}-${r.teamCategory}-${r.competitionId}${
+          r.subPostId ? `-${r.subPostId}` : ''
+        }`;
+        return {
+          id: scoreId,
+          schoolId: r.schoolId,
+          teamCategory: r.teamCategory,
+          competitionId: r.competitionId,
+          subPostId: r.subPostId,
+          score: r.score,
+          timeInMs: r.timeInMs || 0,
+          timeFormatted: r.timeFormatted || '00:00:000',
+          judgeId: 'admin_upload',
+          judgeName: 'Administrator (Import Excel)',
+          posName: r.posName,
+          timestamp: new Date().toISOString(),
+        };
+      });
 
       await ApiService.uploadBatchScores(batchPayload);
 
       setUploadSuccessMsg(`Berhasil mengimpor ${validRows.length} data nilai ke dalam sistem!`);
+      onUploadSuccess();
       setTimeout(() => {
         onUploadSuccess();
         onClose();
-      }, 1500);
+      }, 1000);
     } catch (err: any) {
       setUploadError(err.message || 'Gagal menyimpan batch nilai ke server.');
     } finally {

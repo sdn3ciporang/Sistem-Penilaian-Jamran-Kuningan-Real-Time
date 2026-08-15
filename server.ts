@@ -612,7 +612,7 @@ app.post('/api/scores/batch', (req, res) => {
   saveStorage();
   triggerBackgroundFirestoreSync();
   triggerBackgroundGSheetsSync();
-  broadcastSSE('scores_batch_updated', { processedCount: processed.length });
+  broadcastSSE('scores_batch_updated', { scores: scoresData, processedCount: processed.length });
 
   res.json({ success: true, count: processed.length });
 });

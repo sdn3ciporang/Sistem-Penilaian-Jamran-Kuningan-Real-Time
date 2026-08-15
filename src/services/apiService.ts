@@ -204,6 +204,7 @@ export class ApiService {
     // If completely offline, save to local queue
     if (!navigator.onLine) {
       this.saveOfflineQueue(payload);
+      this.updateLocalScoreCache(scoreRecord);
       return {
         success: true,
         isOffline: true,
@@ -213,14 +214,17 @@ export class ApiService {
       };
     }
 
-    // 1. Direct Cloud Firestore write (Guarantees persistence on Vercel)
+    // 1. Synchronously update local cache so the UI updates instantly
+    this.updateLocalScoreCache(scoreRecord);
+
+    // 2. Direct Cloud Firestore write (Guarantees persistence on Vercel)
     try {
       await saveScoreToFirestoreClient(scoreRecord, logItem);
     } catch (fsErr) {
       console.warn('[ApiService] Firestore direct save notice:', fsErr);
     }
 
-    // 2. Also notify Express backend if running
+    // 3. Also notify Express backend if running
     try {
       await safeFetchJson('/api/scores', {
         method: 'POST',
@@ -237,6 +241,27 @@ export class ApiService {
       logItem,
       message: 'Nilai berhasil disimpan ke Cloud Firestore!',
     };
+  }
+
+  static updateLocalScoreCache(scoreRecord: ScoreRecord) {
+    try {
+      const cached = localStorage.getItem('pramuka_scores_backup');
+      const currentScores: ScoreRecord[] = cached ? JSON.parse(cached) : [];
+      const scoreMap = new Map<string, ScoreRecord>();
+      currentScores.forEach((s) => scoreMap.set(s.id, s));
+      scoreMap.set(scoreRecord.id, scoreRecord);
+      const mergedScores = Array.from(scoreMap.values());
+      localStorage.setItem('pramuka_scores_backup', JSON.stringify(mergedScores));
+
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        parsed.scores = mergedScores;
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch (e) {
+      console.warn('[ApiService] Local score cache update error:', e);
+    }
   }
 
   static saveOfflineQueue(payload: any) {
@@ -301,6 +326,21 @@ export class ApiService {
 
   static async deleteScore(scoreId: string) {
     try {
+      const cached = localStorage.getItem('pramuka_scores_backup');
+      if (cached) {
+        const currentScores: ScoreRecord[] = JSON.parse(cached);
+        const filtered = currentScores.filter((s) => s.id !== scoreId);
+        localStorage.setItem('pramuka_scores_backup', JSON.stringify(filtered));
+      }
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        parsed.scores = (parsed.scores || []).filter((s: ScoreRecord) => s.id !== scoreId);
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch {}
+
+    try {
       await deleteScoreFromFirestoreClient(scoreId);
     } catch (fsErr) {
       console.warn('[ApiService] Firestore delete score error:', fsErr);
@@ -357,6 +397,23 @@ export class ApiService {
       console.warn('Firestore save school warning:', e);
     }
 
+    // Update local cache immediately
+    try {
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        const existing: School[] = parsed.schools || [];
+        const idx = existing.findIndex((s) => s.id === fullSchool.id);
+        if (idx >= 0) {
+          existing[idx] = fullSchool;
+        } else {
+          existing.push(fullSchool);
+        }
+        parsed.schools = existing.sort((a, b) => Number(a.id) - Number(b.id));
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch {}
+
     try {
       const isEdit = !!school.id;
       const url = isEdit ? `/api/schools/${school.id}` : '/api/schools';
@@ -379,6 +436,15 @@ export class ApiService {
     }
 
     try {
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        parsed.schools = (parsed.schools || []).filter((s: School) => s.id !== id);
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch {}
+
+    try {
       await safeFetchJson(`/api/schools/${id}`, { method: 'DELETE' });
     } catch {}
 
@@ -387,11 +453,31 @@ export class ApiService {
 
   static async saveJudge(judge: Partial<Judge>) {
     const fullJudge = judge as Judge;
+    if (!fullJudge.id && fullJudge.username) {
+      fullJudge.id = 'judge_' + fullJudge.username.toLowerCase().replace(/[^a-z0-9_]/g, '_');
+    }
+
     try {
       await saveJudgeToFirestoreClient(fullJudge);
     } catch (e) {
       console.warn('Firestore save judge warning:', e);
     }
+
+    try {
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        const existing: Judge[] = parsed.judges || [];
+        const idx = existing.findIndex((j) => j.id === fullJudge.id);
+        if (idx >= 0) {
+          existing[idx] = fullJudge;
+        } else {
+          existing.push(fullJudge);
+        }
+        parsed.judges = existing;
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch {}
 
     try {
       const isEdit = !!judge.id;
@@ -408,21 +494,46 @@ export class ApiService {
   }
 
   static async saveJudgesBatch(batchJudges: Partial<Judge>[]) {
-    for (const j of batchJudges) {
-      if (j.id) {
-        await saveJudgeToFirestoreClient(j as Judge).catch(() => null);
-      }
+    const sanitizedJudges: Judge[] = batchJudges.map((j) => {
+      const id = j.id || ('judge_' + String(j.username || Date.now()).toLowerCase().replace(/[^a-z0-9_]/g, '_'));
+      return {
+        id,
+        name: j.name || 'Juri',
+        username: j.username || id,
+        password: j.password || 'juri123',
+        role: j.role || 'JUDGE',
+        assignedCompetitionId: j.assignedCompetitionId || '',
+        assignedSubPostId: j.assignedSubPostId,
+        assignedCategory: j.assignedCategory || 'ALL',
+        isActive: j.isActive !== false,
+      };
+    });
+
+    for (const j of sanitizedJudges) {
+      await saveJudgeToFirestoreClient(j).catch(() => null);
     }
+
+    try {
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        const judgeMap = new Map<string, Judge>();
+        (parsed.judges || []).forEach((j: Judge) => judgeMap.set(j.id, j));
+        sanitizedJudges.forEach((j) => judgeMap.set(j.id, j));
+        parsed.judges = Array.from(judgeMap.values());
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch {}
 
     try {
       await safeFetchJson('/api/judges/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ batchJudges }),
+        body: JSON.stringify({ batchJudges: sanitizedJudges }),
       });
     } catch {}
 
-    return { success: true, count: batchJudges.length, message: 'Batch juri berhasil disimpan' };
+    return { success: true, count: sanitizedJudges.length, message: 'Batch juri berhasil disimpan' };
   }
 
   static async deleteJudge(id: string) {
@@ -431,6 +542,15 @@ export class ApiService {
     } catch (e) {
       console.warn('Firestore delete judge warning:', e);
     }
+
+    try {
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        parsed.judges = (parsed.judges || []).filter((j: Judge) => j.id !== id);
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch {}
 
     try {
       await safeFetchJson(`/api/judges/${encodeURIComponent(id)}`, { method: 'DELETE' });
@@ -447,21 +567,54 @@ export class ApiService {
   }
 
   static async uploadBatchScores(batchScores: ScoreRecord[]) {
+    const sanitizedScores: ScoreRecord[] = batchScores.map((s) => {
+      const id =
+        s.id ||
+        `score-${s.schoolId}-${s.teamCategory}-${s.competitionId}${s.subPostId ? `-${s.subPostId}` : ''}`;
+      return {
+        ...s,
+        id,
+        timestamp: s.timestamp || new Date().toISOString(),
+      };
+    });
+
+    // 1. Direct Cloud Firestore write
     try {
-      await batchUploadScoresToFirestoreClient(batchScores);
+      await batchUploadScoresToFirestoreClient(sanitizedScores);
     } catch (e) {
       console.warn('Firestore batch scores upload warning:', e);
     }
 
+    // 2. Synchronously update localStorage so UI sees data immediately
+    try {
+      const cached = localStorage.getItem('pramuka_scores_backup');
+      const currentScores: ScoreRecord[] = cached ? JSON.parse(cached) : [];
+      const scoreMap = new Map<string, ScoreRecord>();
+      currentScores.forEach((s) => scoreMap.set(s.id, s));
+      sanitizedScores.forEach((s) => scoreMap.set(s.id, s));
+      const mergedScores = Array.from(scoreMap.values());
+      localStorage.setItem('pramuka_scores_backup', JSON.stringify(mergedScores));
+
+      const initCache = localStorage.getItem('pramuka_initial_cache');
+      if (initCache) {
+        const parsed = JSON.parse(initCache);
+        parsed.scores = mergedScores;
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(parsed));
+      }
+    } catch (cacheErr) {
+      console.warn('Cache update error:', cacheErr);
+    }
+
+    // 3. Notify Express server if running
     try {
       await safeFetchJson('/api/scores/batch', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ batchScores }),
+        body: JSON.stringify({ batchScores: sanitizedScores }),
       });
     } catch {}
 
-    return { success: true, count: batchScores.length };
+    return { success: true, count: sanitizedScores.length };
   }
 
   static async saveSettings(settings: Partial<AppSettings>) {

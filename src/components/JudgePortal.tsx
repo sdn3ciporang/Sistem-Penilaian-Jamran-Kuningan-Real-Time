@@ -12,7 +12,7 @@ interface JudgePortalProps {
   settings: AppSettings;
   initialCategory?: TeamCategory;
   selectedSchoolIdProp?: number | null;
-  onScoreSaved: () => void;
+  onScoreSaved: (savedRecord?: ScoreRecord) => void;
 }
 
 export const JudgePortal: React.FC<JudgePortalProps> = ({
@@ -304,7 +304,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
       setCapturedTimeMs(0);
       setCapturedTimeFormatted('00:00:000');
 
-      onScoreSaved();
+      onScoreSaved(result.scoreRecord);
     } catch (err: any) {
       showToast(err.message || 'Gagal menyimpan nilai', 'error');
     } finally {
