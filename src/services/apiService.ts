@@ -37,7 +37,20 @@ async function safeFetchJson<T = any>(url: string, options?: RequestInit): Promi
 
 export class ApiService {
   static async getInitialData() {
-    // 1. Try Express backend API if available (Local dev / Container)
+    // 1. Direct Cloud Firestore Client fetch (Guarantees live data across all devices on Vercel & Web)
+    try {
+      const firestoreData = await fetchAllFromFirestoreClient();
+      if (firestoreData && Array.isArray(firestoreData.schools) && firestoreData.schools.length > 0) {
+        if (!Array.isArray(firestoreData.scores)) firestoreData.scores = [];
+        localStorage.setItem('pramuka_scores_backup', JSON.stringify(firestoreData.scores));
+        localStorage.setItem('pramuka_initial_cache', JSON.stringify(firestoreData));
+        return firestoreData;
+      }
+    } catch (fsErr) {
+      console.warn('[ApiService] Direct Firestore fetch notice:', fsErr);
+    }
+
+    // 2. Try Express backend API if available (Local dev / Container fallback)
     try {
       const data = await safeFetchJson<any>('/api/initial-data');
       if (data && Array.isArray(data.schools) && data.schools.length > 0) {
@@ -47,19 +60,7 @@ export class ApiService {
         return data;
       }
     } catch (apiErr) {
-      // Backend not running (e.g. Vercel, static hosting, or offline) - fall through to Cloud Firestore
-    }
-
-    // 2. Direct Cloud Firestore Client fetch (Vercel / Online)
-    try {
-      const firestoreData = await fetchAllFromFirestoreClient();
-      if (firestoreData && Array.isArray(firestoreData.schools) && firestoreData.schools.length > 0) {
-        localStorage.setItem('pramuka_scores_backup', JSON.stringify(firestoreData.scores || []));
-        localStorage.setItem('pramuka_initial_cache', JSON.stringify(firestoreData));
-        return firestoreData;
-      }
-    } catch (fsErr) {
-      console.warn('[ApiService] Direct Firestore fetch error:', fsErr);
+      // Backend not running (e.g. Vercel static)
     }
 
     // 3. Fallback to Local Persistent Cache
@@ -129,9 +130,21 @@ export class ApiService {
       }
     } catch {}
 
-    const foundJudge = judgeList.find(
+    let foundJudge = judgeList.find(
       (j) => j.username.toLowerCase() === cleanUser || j.id.toLowerCase() === cleanUser
     );
+
+    if (!foundJudge) {
+      try {
+        const fsData = await fetchAllFromFirestoreClient();
+        if (fsData && fsData.judges && fsData.judges.length > 0) {
+          judgeList = fsData.judges;
+          foundJudge = judgeList.find(
+            (j) => j.username.toLowerCase() === cleanUser || j.id.toLowerCase() === cleanUser
+          );
+        }
+      } catch {}
+    }
 
     if (!foundJudge) {
       throw new Error('Username juri atau admin tidak ditemukan.');

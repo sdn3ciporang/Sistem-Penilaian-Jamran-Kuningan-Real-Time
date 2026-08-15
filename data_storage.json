@@ -1,0 +1,1168 @@
+{
+  "schools": [
+    {
+      "id": 1,
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 17 Kuningan",
+      "code": "PKG-01"
+    },
+    {
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 5 Purwawinangun",
+      "code": "PKG-10",
+      "id": 10
+    },
+    {
+      "id": 11,
+      "code": "PKG-11",
+      "name": "SDN 6 Purwawinangun",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "id": 12,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-12",
+      "name": "SDIT Al Imam"
+    },
+    {
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 2 Kuningan",
+      "code": "PKG-13",
+      "id": 13
+    },
+    {
+      "id": 14,
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 4 Kuningan",
+      "code": "PKG-14"
+    },
+    {
+      "code": "PKG-15",
+      "name": "SDN 5 Kuningan",
+      "hasPutri": true,
+      "hasPutra": true,
+      "id": 15
+    },
+    {
+      "code": "PKG-16",
+      "name": "SDN 10 Kuningan",
+      "hasPutri": true,
+      "hasPutra": true,
+      "id": 16
+    },
+    {
+      "id": 17,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-17",
+      "name": "SDN 11 Kuningan"
+    },
+    {
+      "id": 18,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-18",
+      "name": "SDIT Al Istiqomah"
+    },
+    {
+      "id": 19,
+      "name": "SDN 1 Cibinuang",
+      "code": "PKG-19",
+      "hasPutra": true,
+      "hasPutri": true
+    },
+    {
+      "id": 2,
+      "name": "SDN 1 Awirarangan",
+      "code": "PKG-02",
+      "hasPutra": true,
+      "hasPutri": true
+    },
+    {
+      "id": 20,
+      "code": "PKG-20",
+      "name": "SDN 2 Cibinuang",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "id": 21,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-21",
+      "name": "SDN 1 Citangtu"
+    },
+    {
+      "id": 22,
+      "name": "SDN 2 Citangtu",
+      "code": "PKG-22",
+      "hasPutra": true,
+      "hasPutri": true
+    },
+    {
+      "id": 23,
+      "code": "PKG-23",
+      "name": "SDN 3 Citangtu",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "code": "PKG-24",
+      "name": "SDN 4 Citangtu",
+      "hasPutri": true,
+      "hasPutra": true,
+      "id": 24
+    },
+    {
+      "id": 25,
+      "code": "PKG-25",
+      "name": "SDN 1 Windusengkahan",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "id": 26,
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 2 Windusengkahan",
+      "code": "PKG-26"
+    },
+    {
+      "code": "PKG-27",
+      "name": "SDN 1 Winduhaji",
+      "hasPutri": true,
+      "hasPutra": true,
+      "id": 27
+    },
+    {
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-28",
+      "name": "SDN 2 Winduhaji",
+      "id": 28
+    },
+    {
+      "id": 29,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-29",
+      "name": "SDN 3 Winduhaji"
+    },
+    {
+      "code": "PKG-03",
+      "name": "SDN 3 Awirarangan",
+      "hasPutri": true,
+      "hasPutra": true,
+      "id": 3
+    },
+    {
+      "id": 30,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-30",
+      "name": "SDN 1 Karangtawang"
+    },
+    {
+      "name": "SDN 2 Karangtawang",
+      "code": "PKG-31",
+      "hasPutra": true,
+      "hasPutri": true,
+      "id": 31
+    },
+    {
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-32",
+      "name": "SDN 3 Karangtawang",
+      "id": 32
+    },
+    {
+      "id": 33,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-33",
+      "name": "SDN Cijoho"
+    },
+    {
+      "id": 34,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-34",
+      "name": "SDN 4 Cijoho"
+    },
+    {
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 1 Kedungarum",
+      "code": "PKG-35",
+      "id": 35
+    },
+    {
+      "code": "PKG-36",
+      "name": "SDN 2 Kedungarum",
+      "hasPutri": true,
+      "hasPutra": true,
+      "id": 36
+    },
+    {
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-37",
+      "name": "SDN 1 Padarek",
+      "id": 37
+    },
+    {
+      "name": "SDN 2 Padarek",
+      "code": "PKG-38",
+      "hasPutra": true,
+      "hasPutri": true,
+      "id": 38
+    },
+    {
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDT Graha Qur'an",
+      "code": "PKG-39",
+      "id": 39
+    },
+    {
+      "id": 4,
+      "name": "SDN 4 Awirarangan",
+      "code": "PKG-04",
+      "hasPutra": true,
+      "hasPutri": true
+    },
+    {
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-40",
+      "name": "SDN 1 Ciporang",
+      "id": 40
+    },
+    {
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-41",
+      "name": "SDN 2 Ciporang",
+      "id": 41
+    },
+    {
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-42",
+      "name": "SDN 3 Ciporang",
+      "id": 42
+    },
+    {
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 1 Ancaran",
+      "code": "PKG-43",
+      "id": 43
+    },
+    {
+      "name": "SDN 2 Ancaran",
+      "code": "PKG-44",
+      "hasPutra": true,
+      "hasPutri": true,
+      "id": 44
+    },
+    {
+      "id": 45,
+      "name": "SDN 3 Ancaran",
+      "code": "PKG-45",
+      "hasPutra": true,
+      "hasPutri": true
+    },
+    {
+      "id": 46,
+      "code": "PKG-46",
+      "name": "SDN 1 Purwawinangun",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "id": 47,
+      "name": "SDN 7 Purwawinangun",
+      "code": "PKG-47",
+      "hasPutra": true,
+      "hasPutri": true
+    },
+    {
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN Cigintung",
+      "code": "PKG-48",
+      "id": 48
+    },
+    {
+      "id": 49,
+      "code": "PKG-49",
+      "name": "SDIP Baitussalam",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "id": 5,
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDIT Darul Amanah",
+      "code": "PKG-05"
+    },
+    {
+      "id": 50,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-50",
+      "name": "SDN 1 Cirendang"
+    },
+    {
+      "id": 51,
+      "code": "PKG-51",
+      "name": "SDN 2 Cirendang",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "id": 52,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-52",
+      "name": "SDN 1 Kasturi"
+    },
+    {
+      "id": 53,
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 2 Kasturi",
+      "code": "PKG-53"
+    },
+    {
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SD Aisyiyah Kuningan",
+      "code": "PKG-54",
+      "id": 54
+    },
+    {
+      "id": 55,
+      "hasPutri": true,
+      "hasPutra": true,
+      "code": "PKG-55",
+      "name": "SDIT Riyadul Huda"
+    },
+    {
+      "id": 6,
+      "code": "PKG-06",
+      "name": "SD Linimasa",
+      "hasPutri": true,
+      "hasPutra": true
+    },
+    {
+      "code": "PKG-07",
+      "name": "SDN 2 Purwawinangun",
+      "hasPutri": true,
+      "hasPutra": true,
+      "id": 7
+    },
+    {
+      "id": 8,
+      "hasPutra": true,
+      "hasPutri": true,
+      "name": "SDN 3 Purwawinangun",
+      "code": "PKG-08"
+    },
+    {
+      "id": 9,
+      "code": "PKG-09",
+      "name": "SDN 4 Purwawinangun",
+      "hasPutri": true,
+      "hasPutra": true
+    }
+  ],
+  "competitions": [
+    {
+      "isExploration": false,
+      "minScore": 0,
+      "order": 1,
+      "hasTime": true,
+      "maxScore": 100,
+      "id": "comp-1",
+      "active": true,
+      "name": "Tenda Asri"
+    },
+    {
+      "maxScore": 100,
+      "hasTime": false,
+      "order": 10,
+      "isExploration": false,
+      "minScore": 0,
+      "name": "Reportase",
+      "active": true,
+      "id": "comp-10"
+    },
+    {
+      "isExploration": false,
+      "minScore": 0,
+      "hasTime": true,
+      "maxScore": 100,
+      "order": 11,
+      "id": "comp-11",
+      "name": "Olahraga Tradisional",
+      "active": true
+    },
+    {
+      "isExploration": false,
+      "minScore": 0,
+      "hasTime": true,
+      "maxScore": 100,
+      "order": 2,
+      "id": "comp-2",
+      "name": "PPGD",
+      "active": true
+    },
+    {
+      "id": "comp-3",
+      "name": "Pionering",
+      "active": true,
+      "isExploration": false,
+      "minScore": 0,
+      "hasTime": true,
+      "maxScore": 100,
+      "order": 3
+    },
+    {
+      "name": "Penjelajahan",
+      "id": "comp-4",
+      "order": 4,
+      "hasTime": true,
+      "maxScore": 100,
+      "minScore": 0,
+      "isExploration": true,
+      "active": true,
+      "subPosts": [
+        {
+          "minScore": 0,
+          "competitionId": "comp-4",
+          "order": 1,
+          "maxScore": 100,
+          "id": "sub-p1",
+          "name": "Pos 1 PUPK"
+        },
+        {
+          "name": "Pos 2 PBB",
+          "id": "sub-p2",
+          "order": 2,
+          "competitionId": "comp-4",
+          "maxScore": 100,
+          "minScore": 0
+        },
+        {
+          "name": "Pos 3 Packing",
+          "id": "sub-p3",
+          "maxScore": 100,
+          "competitionId": "comp-4",
+          "order": 3,
+          "minScore": 0
+        },
+        {
+          "id": "sub-p4",
+          "name": "Pos 4 KIM",
+          "minScore": 0,
+          "competitionId": "comp-4",
+          "order": 4,
+          "maxScore": 100
+        },
+        {
+          "minScore": 0,
+          "hasTime": false,
+          "maxScore": 100,
+          "order": 5,
+          "competitionId": "comp-4",
+          "id": "sub-p5",
+          "name": "Pos 5 Yel-Yel"
+        },
+        {
+          "id": "sub-1786750394492-xvq",
+          "name": "Pos 6 Rintang",
+          "minScore": 0,
+          "hasTime": true,
+          "maxScore": 100,
+          "competitionId": "comp-4",
+          "order": 6
+        }
+      ]
+    },
+    {
+      "isExploration": false,
+      "minScore": 0,
+      "hasTime": true,
+      "maxScore": 100,
+      "order": 5,
+      "id": "comp-5",
+      "name": "Sketsa Panorama",
+      "active": true
+    },
+    {
+      "name": "Menaksir Tinggi",
+      "active": true,
+      "id": "comp-6",
+      "order": 6,
+      "maxScore": 100,
+      "hasTime": true,
+      "isExploration": false,
+      "minScore": 0
+    },
+    {
+      "isExploration": false,
+      "minScore": 0,
+      "hasTime": true,
+      "maxScore": 100,
+      "order": 7,
+      "id": "comp-7",
+      "name": "Sandi Morse Semaphore",
+      "active": true
+    },
+    {
+      "order": 8,
+      "hasTime": true,
+      "maxScore": 100,
+      "isExploration": false,
+      "minScore": 0,
+      "name": "Kompas",
+      "active": true,
+      "id": "comp-8"
+    },
+    {
+      "hasTime": false,
+      "maxScore": 100,
+      "order": 9,
+      "isExploration": false,
+      "minScore": 0,
+      "name": "Melukis Poster",
+      "active": true,
+      "id": "comp-9"
+    }
+  ],
+  "judges": [
+    {
+      "name": "01_Putra_Tenda Asri",
+      "assignedCategory": "PUTRA",
+      "id": "judge-1786752044914-16l1",
+      "lastActive": "2026-08-15T19:26:09.465Z",
+      "password": "G36sCuh",
+      "isActive": true,
+      "role": "JUDGE",
+      "assignedSubPostId": "",
+      "username": "tendaasri_putra",
+      "assignedCompetitionId": "comp-1"
+    },
+    {
+      "assignedCategory": "PUTRA",
+      "name": "02_Putra_PPGD",
+      "id": "judge-1786752044915-ng6l",
+      "password": "L37mIbg",
+      "username": "ppgd_putra",
+      "role": "JUDGE",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-2",
+      "isActive": true
+    },
+    {
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE",
+      "username": "pos1-pupk_putra",
+      "isActive": true,
+      "password": "A19zVfr",
+      "id": "judge-1786752044916-1v8h",
+      "name": "04_Putra_PJJ_PUPK",
+      "assignedCategory": "PUTRA"
+    },
+    {
+      "isActive": true,
+      "username": "pionering_putra",
+      "role": "JUDGE",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-3",
+      "password": "T82sVbd",
+      "id": "judge-1786752044916-vjjv",
+      "name": "03_Putra_Pionering",
+      "assignedCategory": "PUTRA"
+    },
+    {
+      "id": "judge-1786752044917-38md",
+      "assignedCategory": "PUTRA",
+      "name": "05_Putra_PJJ_PBB",
+      "role": "JUDGE",
+      "assignedCompetitionId": "comp-4",
+      "assignedSubPostId": "",
+      "username": "pos2-pbb_putra",
+      "isActive": true,
+      "password": "Q97cTfy"
+    },
+    {
+      "password": "Z12hByn",
+      "username": "pos4-kim_putra",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE",
+      "isActive": true,
+      "name": "07_Putra_PJJ_KIM",
+      "assignedCategory": "PUTRA",
+      "id": "judge-1786752044917-awet"
+    },
+    {
+      "name": "06_Putra_PJJ_Packing",
+      "assignedCategory": "PUTRA",
+      "id": "judge-1786752044917-sdqw",
+      "password": "O19qGao",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE",
+      "username": "pos3-packing_putra",
+      "isActive": true
+    },
+    {
+      "password": "L54qYch",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE",
+      "username": "pos6-rintang_putra",
+      "isActive": true,
+      "assignedCategory": "PUTRA",
+      "name": "09_Putra_PJJ_Rintang",
+      "id": "judge-1786752044918-09rw"
+    },
+    {
+      "name": "08_Putra_PJJ_Yel-yel",
+      "assignedCategory": "PUTRA",
+      "id": "judge-1786752044918-2qbv",
+      "password": "M88pKih",
+      "isActive": true,
+      "username": "pos5-yel-yel_putra",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE"
+    },
+    {
+      "role": "JUDGE",
+      "assignedCompetitionId": "comp-5",
+      "assignedSubPostId": "",
+      "username": "panorama_putra",
+      "isActive": true,
+      "password": "E88hOzr",
+      "id": "judge-1786752044918-6gna",
+      "name": "10_Putra_Sketsa Panorama",
+      "assignedCategory": "PUTRA"
+    },
+    {
+      "password": "Q55tMsx",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-7",
+      "role": "JUDGE",
+      "username": "sms_putra",
+      "isActive": true,
+      "assignedCategory": "PUTRA",
+      "name": "12_Putra_Sandi Morse Semaphore",
+      "id": "judge-1786752044919-05ew"
+    },
+    {
+      "isActive": true,
+      "role": "JUDGE",
+      "assignedCompetitionId": "comp-8",
+      "assignedSubPostId": "",
+      "username": "kompas_putra",
+      "password": "L64uIjm",
+      "id": "judge-1786752044919-a9hd",
+      "name": "13_Putra_Kompas",
+      "assignedCategory": "PUTRA"
+    },
+    {
+      "isActive": true,
+      "username": "poster_putra",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-9",
+      "role": "JUDGE",
+      "password": "H30lBxp",
+      "id": "judge-1786752044919-d1f1",
+      "assignedCategory": "PUTRA",
+      "name": "14_Putra_Melukis Poster"
+    },
+    {
+      "username": "menaksir_putra",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-6",
+      "role": "JUDGE",
+      "isActive": true,
+      "password": "O45eJef",
+      "id": "judge-1786752044919-mkb2",
+      "assignedCategory": "PUTRA",
+      "name": "11_Putra_Menaksir Tinggi"
+    },
+    {
+      "assignedCategory": "PUTRI",
+      "name": "17_Putri_Tenda Asri",
+      "id": "judge-1786752044920-6r5s",
+      "password": "K85jQvk",
+      "isActive": true,
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-1",
+      "role": "JUDGE",
+      "username": "tendaasri_putri"
+    },
+    {
+      "id": "judge-1786752044920-82h5",
+      "name": "18_Putri_PPGD",
+      "assignedCategory": "PUTRI",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-2",
+      "role": "JUDGE",
+      "username": "ppgd_putri",
+      "isActive": true,
+      "password": "Q55sFla"
+    },
+    {
+      "id": "judge-1786752044920-8fw9",
+      "assignedCategory": "PUTRA",
+      "name": "15_Putra_Reportase",
+      "role": "JUDGE",
+      "assignedCompetitionId": "comp-10",
+      "assignedSubPostId": "",
+      "username": "reportase_putra",
+      "isActive": true,
+      "password": "M53lZrt"
+    },
+    {
+      "name": "16_Putra_Olahraga Tradisional",
+      "assignedCategory": "PUTRA",
+      "id": "judge-1786752044920-lw1f",
+      "password": "X20gTdg",
+      "isActive": true,
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-11",
+      "role": "JUDGE",
+      "username": "ortrad_putra"
+    },
+    {
+      "id": "judge-1786752044921-38v9",
+      "assignedCategory": "PUTRI",
+      "name": "20_Putra_PJJ_PUPK",
+      "assignedCompetitionId": "comp-4",
+      "assignedSubPostId": "",
+      "role": "JUDGE",
+      "username": "pos1-pupk_putri",
+      "isActive": true,
+      "password": "G50zUjk"
+    },
+    {
+      "name": "22_Putra_PJJ_Packing",
+      "assignedCategory": "PUTRI",
+      "id": "judge-1786752044921-3ef7",
+      "password": "I11gVsw",
+      "isActive": true,
+      "username": "pos3-packing_putri",
+      "role": "JUDGE",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4"
+    },
+    {
+      "password": "M42mXqi",
+      "isActive": true,
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-3",
+      "role": "JUDGE",
+      "username": "pionering_putri",
+      "name": "19_Putri_Pionering",
+      "assignedCategory": "PUTRI",
+      "id": "judge-1786752044921-bboo"
+    },
+    {
+      "isActive": true,
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE",
+      "username": "pos2-pbb_putri",
+      "password": "D11cQzq",
+      "id": "judge-1786752044921-tq6q",
+      "assignedCategory": "PUTRI",
+      "name": "21_Putra_PJJ_PBB"
+    },
+    {
+      "id": "judge-1786752044922-3r1f",
+      "assignedCategory": "PUTRI",
+      "name": "23_Putra_PJJ_KIM",
+      "isActive": true,
+      "role": "JUDGE",
+      "assignedCompetitionId": "comp-4",
+      "assignedSubPostId": "",
+      "username": "pos4-kim_putri",
+      "password": "J62nHqo"
+    },
+    {
+      "password": "H20mAyl",
+      "isActive": true,
+      "username": "pos5-yel-yel_putri",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE",
+      "name": "24_Putra_PJJ_Yel-yel",
+      "assignedCategory": "PUTRI",
+      "id": "judge-1786752044922-u22n"
+    },
+    {
+      "isActive": true,
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-4",
+      "role": "JUDGE",
+      "username": "pos6-rintang_putri",
+      "password": "D46hFud",
+      "id": "judge-1786752044922-wwbv",
+      "name": "25_Putra_PJJ_Rintang",
+      "assignedCategory": "PUTRI"
+    },
+    {
+      "role": "JUDGE",
+      "assignedCompetitionId": "comp-5",
+      "assignedSubPostId": "",
+      "username": "panorama_putri",
+      "isActive": true,
+      "password": "T94lWnh",
+      "id": "judge-1786752044923-1fue",
+      "assignedCategory": "PUTRI",
+      "name": "26_Putri_Sketsa Panorama"
+    },
+    {
+      "isActive": true,
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-6",
+      "role": "JUDGE",
+      "username": "menaksir_putri",
+      "password": "L65tEqv",
+      "id": "judge-1786752044924-abkb",
+      "name": "27_Putri_Menaksir Tinggi",
+      "assignedCategory": "PUTRI"
+    },
+    {
+      "assignedCategory": "PUTRI",
+      "name": "29_Putri_Kompas",
+      "id": "judge-1786752044924-htq4",
+      "password": "V39sGhx",
+      "role": "JUDGE",
+      "assignedCompetitionId": "comp-8",
+      "assignedSubPostId": "",
+      "username": "kompas_putri",
+      "isActive": true
+    },
+    {
+      "id": "judge-1786752044924-igdq",
+      "assignedCategory": "PUTRI",
+      "name": "31_Putri_Reportase",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-10",
+      "role": "JUDGE",
+      "username": "reportase_putri",
+      "isActive": true,
+      "password": "S39gNrh"
+    },
+    {
+      "id": "judge-1786752044924-mtdx",
+      "name": "28_Putri_Sandi Morse Semaphore",
+      "assignedCategory": "PUTRI",
+      "username": "sms_putri",
+      "role": "JUDGE",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-7",
+      "isActive": true,
+      "password": "U19qUst"
+    },
+    {
+      "username": "poster_putri",
+      "role": "JUDGE",
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-9",
+      "isActive": true,
+      "password": "G36uUog",
+      "id": "judge-1786752044924-x8xf",
+      "assignedCategory": "PUTRI",
+      "name": "30_Putri_Melukis Poster"
+    },
+    {
+      "assignedCategory": "PUTRI",
+      "name": "32_Putri_Olahraga Tradisional",
+      "id": "judge-1786752044925-dyvn",
+      "password": "S14fMjk",
+      "isActive": true,
+      "assignedSubPostId": "",
+      "assignedCompetitionId": "comp-11",
+      "role": "JUDGE",
+      "username": "ortrad_putri"
+    },
+    {
+      "assignedCategory": "ALL",
+      "name": "Administrator Utama",
+      "id": "user-admin",
+      "lastActive": "2026-08-15T20:04:45.012Z",
+      "password": "adminJAMRANkuningan",
+      "isActive": true,
+      "role": "ADMIN",
+      "assignedSubPostId": "",
+      "username": "admin",
+      "assignedCompetitionId": ""
+    }
+  ],
+  "scores": [
+    {
+      "schoolId": 46,
+      "id": "score-1786759661103-vpf1l",
+      "teamCategory": "PUTRA",
+      "score": 85,
+      "posName": "Tenda Asri",
+      "timeFormatted": "06:59:000",
+      "judgeId": "judge-1786752044914-16l1",
+      "timeInMs": 419000,
+      "notes": "",
+      "judgeName": "01_Putra_Tenda Asri",
+      "timestamp": "2026-08-15T02:07:41.103Z",
+      "competitionId": "comp-1"
+    },
+    {
+      "id": "score-1786771676454-sv6ib",
+      "schoolId": 1,
+      "teamCategory": "PUTRA",
+      "timeFormatted": "01:00:000",
+      "posName": "Tenda Asri",
+      "judgeId": "judge-1786752044914-16l1",
+      "score": 1,
+      "timestamp": "2026-08-15T05:27:56.454Z",
+      "judgeName": "01_Putra_Tenda Asri",
+      "competitionId": "comp-1",
+      "timeInMs": 60000,
+      "notes": ""
+    }
+  ],
+  "logs": [
+    {
+      "teamCategory": "PUTRA",
+      "ip": "127.0.0.1",
+      "device": "Admin Console",
+      "oldScore": 0,
+      "judgeName": "Administrator",
+      "timestamp": "2026-08-14T23:31:04.049Z",
+      "newScore": 0,
+      "id": "log-1786750264049",
+      "schoolName": "SEMUA PANGKALAN",
+      "actionType": "DELETE",
+      "posName": "HAPUS SEMUA NILAI"
+    },
+    {
+      "oldScore": 0,
+      "timestamp": "2026-08-14T23:32:30.763Z",
+      "judgeName": "Administrator",
+      "teamCategory": "PUTRA",
+      "ip": "127.0.0.1",
+      "device": "Admin Console",
+      "actionType": "DELETE",
+      "posName": "HAPUS SEMUA NILAI",
+      "id": "log-1786750350763",
+      "newScore": 0,
+      "schoolName": "SEMUA PANGKALAN"
+    },
+    {
+      "schoolName": "SDN 17 Kuningan",
+      "newScore": 35,
+      "oldTimeMs": null,
+      "judgeName": "01_Putra_Tenda Asri",
+      "oldScore": null,
+      "newTimeMs": 405000,
+      "teamCategory": "PUTRA",
+      "device": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36",
+      "actionType": "CREATE",
+      "posName": "Tenda Asri",
+      "id": "log-1786752520055-qilj4",
+      "timestamp": "2026-08-15T00:08:40.055Z",
+      "ip": "169.254.169.126"
+    },
+    {
+      "oldScore": 0,
+      "judgeName": "Administrator",
+      "timestamp": "2026-08-15T01:14:26.122Z",
+      "teamCategory": "PUTRA",
+      "ip": "127.0.0.1",
+      "device": "Admin Console",
+      "actionType": "DELETE",
+      "posName": "HAPUS SEMUA NILAI",
+      "newScore": 0,
+      "id": "log-1786756466122",
+      "schoolName": "SEMUA PANGKALAN"
+    },
+    {
+      "oldTimeMs": null,
+      "newScore": 85,
+      "schoolName": "SDN 1 Purwawinangun",
+      "oldScore": null,
+      "judgeName": "01_Putra_Tenda Asri",
+      "device": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Mobile Safari/537.36",
+      "newTimeMs": 419000,
+      "teamCategory": "PUTRA",
+      "posName": "Tenda Asri",
+      "actionType": "CREATE",
+      "id": "log-1786759661103-nxbvy",
+      "timestamp": "2026-08-15T02:07:41.103Z",
+      "ip": "169.254.169.126"
+    },
+    {
+      "timestamp": "2026-08-15T05:27:56.454Z",
+      "ip": "127.0.0.1",
+      "actionType": "CREATE",
+      "posName": "Tenda Asri",
+      "id": "log-1786771676454-6ukj4",
+      "judgeName": "01_Putra_Tenda Asri",
+      "oldScore": null,
+      "newTimeMs": 60000,
+      "teamCategory": "PUTRA",
+      "device": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/151.0.0.0 Safari/537.36",
+      "schoolName": "SDN 17 Kuningan",
+      "newScore": 1,
+      "oldTimeMs": null
+    },
+    {
+      "timestamp": "2026-08-14T21:16:22.005Z",
+      "ip": "127.0.0.1",
+      "actionType": "CREATE",
+      "posName": "Tenda Asri",
+      "id": "log-seed-1",
+      "oldScore": null,
+      "judgeName": "Juri Demo",
+      "newTimeMs": 145000,
+      "teamCategory": "PUTRA",
+      "device": "Mobile Web Browser",
+      "newScore": 92,
+      "schoolName": "SDN 17 Kuningan",
+      "oldTimeMs": null
+    },
+    {
+      "newScore": 88,
+      "schoolName": "SDN 17 Kuningan",
+      "oldTimeMs": null,
+      "teamCategory": "PUTRI",
+      "newTimeMs": 152000,
+      "device": "Mobile Web Browser",
+      "oldScore": null,
+      "judgeName": "Juri Demo",
+      "id": "log-seed-2",
+      "actionType": "CREATE",
+      "posName": "Tenda Asri",
+      "ip": "127.0.0.1",
+      "timestamp": "2026-08-14T21:15:22.005Z"
+    },
+    {
+      "schoolName": "SDN 1 Awirarangan",
+      "newScore": 85,
+      "oldTimeMs": null,
+      "judgeName": "Juri Demo",
+      "oldScore": null,
+      "teamCategory": "PUTRA",
+      "newTimeMs": 160000,
+      "device": "Mobile Web Browser",
+      "actionType": "CREATE",
+      "posName": "Tenda Asri",
+      "id": "log-seed-3",
+      "timestamp": "2026-08-14T21:14:22.005Z",
+      "ip": "127.0.0.1"
+    },
+    {
+      "judgeName": "Juri Demo",
+      "oldScore": null,
+      "device": "Mobile Web Browser",
+      "teamCategory": "PUTRA",
+      "newTimeMs": 120000,
+      "oldTimeMs": null,
+      "schoolName": "SDN 17 Kuningan",
+      "newScore": 95,
+      "timestamp": "2026-08-14T21:13:22.005Z",
+      "ip": "127.0.0.1",
+      "posName": "PPGD",
+      "actionType": "CREATE",
+      "id": "log-seed-4"
+    },
+    {
+      "teamCategory": "PUTRA",
+      "newTimeMs": 130000,
+      "device": "Mobile Web Browser",
+      "judgeName": "Juri Demo",
+      "oldScore": null,
+      "schoolName": "SDN 1 Awirarangan",
+      "newScore": 90,
+      "oldTimeMs": null,
+      "ip": "127.0.0.1",
+      "timestamp": "2026-08-14T21:12:22.005Z",
+      "id": "log-seed-5",
+      "actionType": "CREATE",
+      "posName": "PPGD"
+    },
+    {
+      "teamCategory": "PUTRA",
+      "newTimeMs": 95000,
+      "device": "Mobile Web Browser",
+      "judgeName": "Juri Demo",
+      "oldScore": null,
+      "schoolName": "SDN 17 Kuningan",
+      "newScore": 88,
+      "oldTimeMs": null,
+      "ip": "127.0.0.1",
+      "timestamp": "2026-08-14T21:11:22.005Z",
+      "id": "log-seed-6",
+      "actionType": "CREATE",
+      "posName": "Penjelajahan - Pos 1 PUPK"
+    },
+    {
+      "oldTimeMs": null,
+      "schoolName": "SDN 17 Kuningan",
+      "newScore": 90,
+      "judgeName": "Juri Demo",
+      "oldScore": null,
+      "device": "Mobile Web Browser",
+      "teamCategory": "PUTRA",
+      "newTimeMs": 110000,
+      "posName": "Penjelajahan - Pos 2 PBB",
+      "actionType": "CREATE",
+      "id": "log-seed-7",
+      "timestamp": "2026-08-14T21:10:22.005Z",
+      "ip": "127.0.0.1"
+    },
+    {
+      "ip": "127.0.0.1",
+      "timestamp": "2026-08-14T21:09:22.005Z",
+      "id": "log-seed-8",
+      "actionType": "CREATE",
+      "posName": "Penjelajahan - Pos 1 PUPK",
+      "newTimeMs": 105000,
+      "teamCategory": "PUTRA",
+      "device": "Mobile Web Browser",
+      "judgeName": "Juri Demo",
+      "oldScore": null,
+      "schoolName": "SDN 1 Awirarangan",
+      "newScore": 82,
+      "oldTimeMs": null
+    }
+  ],
+  "settings": {
+    "defaultMinScore": 0,
+    "publicShowMonitor": false,
+    "publicShowRanking": false,
+    "autoSyncIntervalSec": 5,
+    "publicShowRekap": true,
+    "eventTitle": "Lomba Tingkat III Penggalang Pramuka Kuningan 2026",
+    "judgeShowRekap": true,
+    "rankingLimit": 6,
+    "updatedAt": "2026-08-15T19:49:27.169Z",
+    "defaultMaxScore": 100
+  }
+}
