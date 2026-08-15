@@ -1,7 +1,8 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef } from 'react';
 import { School } from '../types';
 import { ApiService } from '../services/apiService';
-import { School as SchoolIcon, Search, Plus, Edit2, Trash2, Check, X } from 'lucide-react';
+import { School as SchoolIcon, Search, Plus, Edit2, Trash2, Check, X, Download, Upload, FileSpreadsheet } from 'lucide-react';
+import * as XLSX from 'xlsx';
 
 interface MasterSchoolsProps {
   schools: School[];
@@ -19,6 +20,10 @@ export const MasterSchools: React.FC<MasterSchoolsProps> = ({ schools, onRefresh
   const [isSaving, setIsSaving] = useState(false);
   const [deletingSchool, setDeletingSchool] = useState<School | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadStatus, setUploadStatus] = useState<string | null>(null);
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
@@ -51,6 +56,113 @@ export const MasterSchools: React.FC<MasterSchoolsProps> = ({ schools, onRefresh
     setHasPutra(s.hasPutra);
     setHasPutri(s.hasPutri);
     setModalOpen(true);
+  };
+
+  // 1. Download Template Excel Pangkalan
+  const handleDownloadTemplate = () => {
+    const headers = ['No Pangkalan', 'Nama Pangkalan', 'Kode Pangkalan', 'Regu Putra (Ada/Tidak)', 'Regu Putri (Ada/Tidak)'];
+    
+    // Sample rows or current schools
+    const sampleRows = schools.length > 0 
+      ? schools.slice(0, 10).map((s) => [
+          s.id,
+          s.name,
+          s.code || `PKG-${String(s.id).padStart(2, '0')}`,
+          s.hasPutra ? 'Ada' : 'Tidak',
+          s.hasPutri ? 'Ada' : 'Tidak',
+        ])
+      : [
+          [1, 'SDN 1 Kuningan', 'PKG-01', 'Ada', 'Ada'],
+          [2, 'SDN 2 Kuningan', 'PKG-02', 'Ada', 'Ada'],
+          [3, 'SDN 3 Ciporang', 'PKG-03', 'Ada', 'Ada'],
+          [4, 'MI Al-Hikmah', 'PKG-04', 'Ada', 'Tidak'],
+          [5, 'SDIT Al-Ittihad', 'PKG-05', 'Tidak', 'Ada'],
+        ];
+
+    const guideHeaders = ['KOLOM', 'TIPE DATA', 'KETERANGAN & CONTOH'];
+    const guideRows = [
+      ['No Pangkalan', 'Angka (1, 2, 3, dst)', 'Wajib diisi angka nomor urut tenda/pangkalan peserta'],
+      ['Nama Pangkalan', 'Teks', 'Nama resmi sekolah/madrasah (Contoh: SDN 3 Ciporang)'],
+      ['Kode Pangkalan', 'Teks (Opsional)', 'Kode pangkalan unik jika ada (Contoh: PKG-17)'],
+      ['Regu Putra', 'Ada / Tidak', 'Isi "Ada" jika mengirimkan regu putra, "Tidak" jika tidak'],
+      ['Regu Putri', 'Ada / Tidak', 'Isi "Ada" jika mengirimkan regu putri, "Tidak" jika tidak'],
+    ];
+
+    const wsData = XLSX.utils.aoa_to_sheet([headers, ...sampleRows]);
+    const wsGuide = XLSX.utils.aoa_to_sheet([guideHeaders, ...guideRows]);
+
+    wsData['!cols'] = [{ wch: 15 }, { wch: 32 }, { wch: 18 }, { wch: 22 }, { wch: 22 }];
+    wsGuide['!cols'] = [{ wch: 20 }, { wch: 22 }, { wch: 60 }];
+
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, wsData, 'Data_Pangkalan');
+    XLSX.utils.book_append_sheet(wb, wsGuide, 'Panduan_Format');
+
+    XLSX.writeFile(wb, `Template_Import_Pangkalan_${Date.now()}.xlsx`);
+  };
+
+  // 2. Upload Excel Pangkalan
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadStatus('Membaca berkas Excel...');
+
+    try {
+      const buffer = await file.arrayBuffer();
+      const wb = XLSX.read(buffer, { type: 'array' });
+      const firstSheetName = wb.SheetNames[0];
+      const worksheet = wb.Sheets[firstSheetName];
+      const jsonRows: any[] = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+
+      if (jsonRows.length <= 1) {
+        throw new Error('Berkas Excel tidak berisi data pangkalan.');
+      }
+
+      const dataRows = jsonRows.slice(1);
+      let successCount = 0;
+
+      for (let i = 0; i < dataRows.length; i++) {
+        const row = dataRows[i];
+        if (!row || row.length === 0) continue;
+
+        const rawId = Number(row[0]);
+        const rawName = String(row[1] || '').trim();
+        const rawCode = String(row[2] || '').trim();
+        const rawPutra = String(row[3] || 'Ada').trim().toLowerCase();
+        const rawPutri = String(row[4] || 'Ada').trim().toLowerCase();
+
+        if (rawName) {
+          const finalId = !isNaN(rawId) && rawId > 0 ? rawId : (schools.length + successCount + 1);
+          const hasPa = rawPutra === 'ada' || rawPutra === 'ya' || rawPutra === 'true' || rawPutra === '1';
+          const hasPi = rawPutri === 'ada' || rawPutri === 'ya' || rawPutri === 'true' || rawPutri === '1';
+
+          await ApiService.saveSchool({
+            id: finalId,
+            name: rawName,
+            code: rawCode || `PKG-${String(finalId).padStart(2, '0')}`,
+            hasPutra: hasPa,
+            hasPutri: hasPi,
+          });
+          successCount++;
+        }
+      }
+
+      setUploadStatus(`Berhasil mengimpor ${successCount} data pangkalan!`);
+      onRefresh();
+      setTimeout(() => {
+        setUploadStatus(null);
+      }, 2500);
+    } catch (err: any) {
+      alert(err.message || 'Gagal membaca berkas Excel');
+      setUploadStatus(null);
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
   };
 
   const handleSave = async (e: React.FormEvent) => {
@@ -93,25 +205,60 @@ export const MasterSchools: React.FC<MasterSchoolsProps> = ({ schools, onRefresh
     <div className="max-w-6xl mx-auto px-4 py-6 space-y-6">
       
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200 shadow-sm">
         <div>
           <h2 className="text-xl font-black text-slate-900 tracking-tight flex items-center gap-2">
             <SchoolIcon className="w-6 h-6 text-blue-600" />
-            Master Data Pangkalan (55 Sekolah)
+            Master Data Pangkalan ({schools.length} Sekolah)
           </h2>
           <p className="text-xs text-slate-500 mt-0.5">
-            Daftar peserta pangkalan SD/MI yang mengikuti lomba Pramuka.
+            Daftar peserta pangkalan SD/MI yang mengikuti lomba Pramuka. Anda dapat mengimpor banyak pangkalan sekaligus via Excel.
           </p>
         </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="px-4 py-2.5 bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs rounded-xl flex items-center gap-2 shadow-md cursor-pointer transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          <span>TAMBAH PANGKALAN</span>
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Download Template Excel */}
+          <button
+            onClick={handleDownloadTemplate}
+            className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl flex items-center gap-1.5 border border-slate-300 transition-all cursor-pointer"
+            title="Download Template Format Excel Pangkalan"
+          >
+            <Download className="w-3.5 h-3.5 text-slate-600" />
+            <span>DOWNLOAD TEMPLATE</span>
+          </button>
+
+          {/* Upload Excel */}
+          <label className="px-3 py-2 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 shadow-sm transition-all cursor-pointer">
+            <Upload className="w-3.5 h-3.5" />
+            <span>{isUploading ? 'MENGIMPOR...' : 'IMPORT EXCEL'}</span>
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept=".xlsx, .xls"
+              onChange={handleFileUpload}
+              className="hidden"
+              disabled={isUploading}
+            />
+          </label>
+
+          {/* Tambah Manual */}
+          <button
+            onClick={handleOpenAdd}
+            className="px-4 py-2 bg-blue-900 hover:bg-blue-800 text-white font-bold text-xs rounded-xl flex items-center gap-2 shadow-md cursor-pointer transition-all"
+          >
+            <Plus className="w-4 h-4" />
+            <span>TAMBAH PANGKALAN</span>
+          </button>
+        </div>
       </div>
+
+      {/* Upload Status Banner */}
+      {uploadStatus && (
+        <div className="p-3.5 bg-emerald-50 border border-emerald-200 rounded-xl text-xs font-bold text-emerald-800 flex items-center gap-2 shadow-xs">
+          <FileSpreadsheet className="w-4 h-4 text-emerald-600" />
+          <span>{uploadStatus}</span>
+        </div>
+      )}
 
       {/* Search Input */}
       <div className="relative">

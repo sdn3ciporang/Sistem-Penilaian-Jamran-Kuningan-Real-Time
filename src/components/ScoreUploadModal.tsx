@@ -291,24 +291,65 @@ export const ScoreUploadModal: React.FC<ScoreUploadModalProps> = ({
 
       // Parse each row from rawJson
       rawJson.forEach((row) => {
-        // Retrieve ID Pangkalan & School Name
-        const schoolIdRaw = row['ID Pangkalan'] ?? row['ID'] ?? row['id_pangkalan'] ?? row['Id Pangkalan'];
-        const schoolId = Number(schoolIdRaw);
+        // Retrieve ID Pangkalan & School Name (supports all common column aliases)
+        const schoolIdKey = Object.keys(row).find((k) => {
+          const lk = k.toLowerCase().trim();
+          return (
+            lk === 'id pangkalan' ||
+            lk === 'no pangkalan' ||
+            lk === 'no' ||
+            lk === 'nomor' ||
+            lk === 'no tenda' ||
+            lk === 'no urut' ||
+            lk === 'id' ||
+            lk === 'id_pangkalan' ||
+            lk === 'kode'
+          );
+        });
 
-        let schoolNameObj = schools.find((s) => s.id === schoolId);
-        if (!schoolNameObj && row['Nama Pangkalan']) {
-          const nameSearch = String(row['Nama Pangkalan']).toLowerCase().trim();
-          schoolNameObj = schools.find((s) => s.name.toLowerCase().trim() === nameSearch);
+        const schoolNameKey = Object.keys(row).find((k) => {
+          const lk = k.toLowerCase().trim();
+          return (
+            lk === 'nama pangkalan' ||
+            lk === 'nama sekolah' ||
+            lk === 'pangkalan' ||
+            lk === 'sekolah' ||
+            lk === 'nama'
+          );
+        });
+
+        const schoolIdRaw = schoolIdKey ? row[schoolIdKey] : undefined;
+        let schoolId = Number(schoolIdRaw);
+
+        let schoolNameObj = !isNaN(schoolId) && schoolId > 0 ? schools.find((s) => s.id === schoolId) : undefined;
+        if (!schoolNameObj && schoolNameKey && row[schoolNameKey]) {
+          const nameSearch = String(row[schoolNameKey]).toLowerCase().trim();
+          schoolNameObj = schools.find(
+            (s) =>
+              s.name.toLowerCase().trim() === nameSearch ||
+              s.name.toLowerCase().trim().includes(nameSearch) ||
+              nameSearch.includes(s.name.toLowerCase().trim())
+          );
+          if (schoolNameObj) {
+            schoolId = schoolNameObj.id;
+          }
         }
 
-        const schoolName = schoolNameObj ? schoolNameObj.name : (row['Nama Pangkalan'] || `ID #${schoolIdRaw}`);
+        const schoolName = schoolNameObj
+          ? schoolNameObj.name
+          : (schoolNameKey ? row[schoolNameKey] : (schoolIdRaw ? `ID #${schoolIdRaw}` : ''));
 
         // Category Regu
-        const rawCat = String(row['Kategori Regu'] || row['Kategori'] || row['kategori'] || '').toUpperCase().trim();
+        const catKey = Object.keys(row).find((k) => {
+          const lk = k.toLowerCase().trim();
+          return lk === 'kategori regu' || lk === 'kategori' || lk === 'regu' || lk === 'putra/putri' || lk === 'jenis regu';
+        });
+
+        const rawCat = String(catKey ? row[catKey] : (row['Kategori Regu'] || '')).toUpperCase().trim();
         let teamCategory: TeamCategory;
-        if (rawCat === 'PUTRI' || rawCat === 'PI') {
+        if (rawCat.includes('PUTRI') || rawCat === 'PI') {
           teamCategory = 'PUTRI';
-        } else if (rawCat === 'PUTRA' || rawCat === 'PA') {
+        } else if (rawCat.includes('PUTRA') || rawCat === 'PA') {
           teamCategory = 'PUTRA';
         } else {
           teamCategory = selectedRegu !== 'ALL' ? selectedRegu : 'PUTRA';

@@ -129,36 +129,52 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
 
   // 1. Download Template Excel Juri
   const handleDownloadTemplate = () => {
-    const headers = ['Nama Juri', 'Username', 'Password', 'Pos Lomba', 'Kategori Regu (Putra/Putri)'];
+    const headers = ['Nama Juri', 'Username', 'Password', 'Pos Lomba', 'Kategori Regu (Putra/Putri/Semua)'];
     
     // Sample rows for admin guidance
     const sampleRows = [
-      ['Kak Budi Santoso', 'juri_tenda', 'juri123', 'Tenda Asri', 'Putra'],
-      ['Kak Ani Rahmawati', 'juri_ppgd', 'juri123', 'PPGD', 'Putri'],
-      ['Kak Agus Setiawan', 'juri_pos1', 'juri123', 'Penjelajahan - Pos 1 Sandi & Semaphore', 'Putra'],
-      ['Kak Maya Indah', 'juri_sketsa', 'juri123', 'Sketsa Panorama', 'Semua'],
+      ['Kak Budi Santoso', 'juri_tenda_pa', 'juri123', 'Tenda Asri', 'Putra'],
+      ['Kak Ani Rahmawati', 'juri_tenda_pi', 'juri123', 'Tenda Asri', 'Putri'],
+      ['Kak Agus Setiawan', 'juri_pos1', 'juri123', 'Pos 1 Sandi & Semaphore', 'Semua'],
+      ['Kak Maya Indah', 'juri_ppgd', 'juri123', 'PPGD', 'Putri'],
+      ['Kak Hendra', 'juri_pionering', 'juri123', 'Pionering', 'Putra'],
     ];
 
     // Reference List Sheet (Acuan Seluruh Pos Lomba)
-    const refHeaders = ['Nama Pos Lomba', 'Tipe Pos', 'Contoh Isian di Excel'];
+    const refHeaders = ['Nama Pos Lomba', 'Tipe Pos', 'Contoh Isian di Kolom Pos Lomba'];
     const refRows: any[] = [];
 
     competitions.forEach((c) => {
       if (c.isExploration && c.subPosts && c.subPosts.length > 0) {
         c.subPosts.forEach((sp) => {
-          refRows.push([`${c.name} - ${sp.name}`, 'Sub-Pos Penjelajahan', `${c.name} - ${sp.name}`]);
+          refRows.push([`${c.name} - ${sp.name}`, 'Sub-Pos Penjelajahan', sp.name]);
         });
       } else {
         refRows.push([c.name, 'Pos Lomba Utama', c.name]);
       }
     });
 
+    const guideHeaders = ['KOLOM', 'TIPE DATA', 'KETERANGAN & CONTOH'];
+    const guideRows = [
+      ['Nama Juri', 'Teks', 'Nama lengkap juri penilai (Contoh: Kak Budi Santoso)'],
+      ['Username', 'Teks Unik', 'Username untuk login aplikasi juri (Contoh: juri_tenda_pa)'],
+      ['Password', 'Teks', 'Kata sandi akun juri (Contoh: juri123)'],
+      ['Pos Lomba', 'Teks (Sesuai Pos)', 'Nama pos lomba yang ditugaskan (lihat sheet Daftar_Pos_Acuan)'],
+      ['Kategori Regu', 'Putra / Putri / Semua', 'Pilih regu yang dinilai oleh juri (Putra, Putri, atau Semua)'],
+    ];
+
     const wsData = XLSX.utils.aoa_to_sheet([headers, ...sampleRows]);
     const wsRef = XLSX.utils.aoa_to_sheet([refHeaders, ...refRows]);
+    const wsGuide = XLSX.utils.aoa_to_sheet([guideHeaders, ...guideRows]);
+
+    wsData['!cols'] = [{ wch: 25 }, { wch: 20 }, { wch: 16 }, { wch: 32 }, { wch: 32 }];
+    wsRef['!cols'] = [{ wch: 35 }, { wch: 25 }, { wch: 35 }];
+    wsGuide['!cols'] = [{ wch: 18 }, { wch: 24 }, { wch: 60 }];
 
     const wb = XLSX.utils.book_new();
     XLSX.utils.book_append_sheet(wb, wsData, 'Data_Juri');
     XLSX.utils.book_append_sheet(wb, wsRef, 'Daftar_Pos_Acuan');
+    XLSX.utils.book_append_sheet(wb, wsGuide, 'Panduan_Format');
 
     XLSX.writeFile(wb, `Template_Import_Data_Juri_${Date.now()}.xlsx`);
   };
@@ -183,15 +199,32 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
       }
 
       // First row is headers
+      const headersRow: string[] = (jsonRows[0] || []).map((h: any) => String(h || '').toLowerCase().trim());
+      
+      // Dynamic Column Indexes
+      let nameIdx = headersRow.findIndex((h) => h.includes('nama') || h.includes('name'));
+      let userIdx = headersRow.findIndex((h) => h.includes('user') || h.includes('username'));
+      let passIdx = headersRow.findIndex((h) => h.includes('pass') || h.includes('sandi'));
+      let posIdx = headersRow.findIndex((h) => h.includes('pos') || h.includes('lomba'));
+      let catIdx = headersRow.findIndex((h) => h.includes('kategori') || h.includes('regu') || h.includes('category'));
+
+      // Defaults if not found by name
+      if (nameIdx === -1) nameIdx = 0;
+      if (userIdx === -1) userIdx = 1;
+      if (passIdx === -1) passIdx = 2;
+      if (posIdx === -1) posIdx = 3;
+      if (catIdx === -1) catIdx = 4;
+
       const dataRows = jsonRows.slice(1);
       const parsedJudges: Partial<Judge>[] = [];
 
-      dataRows.forEach((row, idx) => {
-        const rawName = String(row[0] || '').trim();
-        const rawUsername = String(row[1] || '').trim();
-        const rawPassword = String(row[2] || 'juri123').trim();
-        const rawPos = String(row[3] || '').trim();
-        const rawCategory = String(row[4] || '').trim().toUpperCase();
+      dataRows.forEach((row) => {
+        if (!row || row.length === 0) return;
+        const rawName = String(row[nameIdx] || '').trim();
+        const rawUsername = String(row[userIdx] || '').trim();
+        const rawPassword = String(row[passIdx] || 'juri123').trim();
+        const rawPos = String(row[posIdx] || '').trim();
+        const rawCategory = String(row[catIdx] || '').trim().toUpperCase();
 
         if (rawName && rawUsername) {
           // Match Pos Lomba to competition or sub-post
@@ -208,7 +241,8 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
                   if (
                     rawPos.toLowerCase() === fullSubName ||
                     rawPos.toLowerCase() === sp.name.toLowerCase() ||
-                    fullSubName.includes(rawPos.toLowerCase())
+                    fullSubName.includes(rawPos.toLowerCase()) ||
+                    rawPos.toLowerCase().includes(sp.name.toLowerCase())
                   ) {
                     matchedCompId = c.id;
                     matchedSubPostId = sp.id;
