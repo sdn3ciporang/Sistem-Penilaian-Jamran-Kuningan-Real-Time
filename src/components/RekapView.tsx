@@ -195,6 +195,7 @@ export const RekapView: React.FC<RekapViewProps> = ({ schools, competitions, sco
         const paddedId = String(s.id).padStart(2, '0');
         return s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q) || String(s.id).includes(q) || paddedId.includes(q);
       })
+      .sort((a, b) => Number(a.id) - Number(b.id))
       .map((school) => {
         const compScores: Record<string, { score: number; timeMs: number; notes?: string }> = {};
         let grandTotal = 0;

@@ -116,18 +116,20 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
 
   // Filtered Schools based on category, search query, and status filter
   const filteredSchools = useMemo(() => {
-    return schools.filter((s) => {
-      if (selectedCategory === 'PUTRA' && !s.hasPutra) return false;
-      if (selectedCategory === 'PUTRI' && !s.hasPutri) return false;
+    return schools
+      .filter((s) => {
+        if (selectedCategory === 'PUTRA' && !s.hasPutra) return false;
+        if (selectedCategory === 'PUTRI' && !s.hasPutri) return false;
 
-      const isScored = scoredSchoolMap[s.id] !== undefined;
-      if (statusFilter === 'UNSCORED' && isScored) return false;
-      if (statusFilter === 'SCORED' && !isScored) return false;
+        const isScored = scoredSchoolMap[s.id] !== undefined;
+        if (statusFilter === 'UNSCORED' && isScored) return false;
+        if (statusFilter === 'SCORED' && !isScored) return false;
 
-      const q = searchQuery.toLowerCase();
-      const paddedId = String(s.id).padStart(2, '0');
-      return s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q) || String(s.id).includes(q) || paddedId.includes(q);
-    });
+        const q = searchQuery.toLowerCase();
+        const paddedId = String(s.id).padStart(2, '0');
+        return s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q) || String(s.id).includes(q) || paddedId.includes(q);
+      })
+      .sort((a, b) => Number(a.id) - Number(b.id));
   }, [schools, selectedCategory, searchQuery, statusFilter, scoredSchoolMap]);
 
   // Selected school object

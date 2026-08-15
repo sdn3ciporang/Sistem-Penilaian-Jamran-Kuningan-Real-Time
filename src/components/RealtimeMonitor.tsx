@@ -35,7 +35,8 @@ export const RealtimeMonitor: React.FC<RealtimeMonitorProps> = ({ schools, compe
         const q = search.toLowerCase();
         const paddedId = String(s.id).padStart(2, '0');
         return s.name.toLowerCase().includes(q) || s.code.toLowerCase().includes(q) || String(s.id).includes(q) || paddedId.includes(q);
-      });
+      })
+      .sort((a, b) => Number(a.id) - Number(b.id));
   }, [schools, selectedCategory, search]);
 
   return (

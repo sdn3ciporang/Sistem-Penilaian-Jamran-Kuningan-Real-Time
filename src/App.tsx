@@ -285,6 +285,9 @@ export default function App() {
           setScores([]);
           localStorage.setItem('pramuka_scores_backup', JSON.stringify([]));
           localStorage.removeItem('pramuka_initial_cache');
+        } else if (Array.isArray(payload?.scores)) {
+          setScores(payload.scores);
+          localStorage.setItem('pramuka_scores_backup', JSON.stringify(payload.scores));
         } else {
           loadInitialData();
         }

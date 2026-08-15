@@ -1,51 +1,35 @@
-# Panduan & Solusi Deployment ke Vercel (vercel.app)
+# Panduan Deployment & Koneksi Cloud Firestore di Vercel
 
-Aplikasi **Sistem Penilaian Lomba Pramuka Real-Time** telah disesuaikan agar **100% kompatibel dengan Vercel** tanpa masalah layar blank (*white screen*).
-
----
-
-## 🔧 Penyebab Layar Blank Sebelumnya & Solusi yang Telah Diterapkan:
-1. **Dynamic Vite Import**: Mengganti impor statis `vite` pada backend serverless agar Vercel Lambda tidak mencari modul dev-dependency di runtime produksi.
-2. **Path & Base URL Presisi**: Menambahkan `base: '/'` di `vite.config.ts` dan konfigurasi *rewrite* bersih di `vercel.json` agar seluruh berkas aset JavaScript/CSS dimuat secara absolut dari root.
-3. **Instant Local Seed Fallback**: Seluruh master data (55 pangkalan, 11 pos lomba, juri) diinisialisasi seketika di memori browser, sehingga layar tidak akan pernah blank saat serverless function sedang *cold-start* atau memuat data.
-4. **React Error Boundary**: Membungkus antarmuka dengan penangkap error otomatis agar pengguna mendapatkan tombol muat ulang jika terjadi gangguan sesi di browser.
+Aplikasi **Sistem Penilaian Lomba Pramuka Real-Time** kini telah dikonfigurasi dengan arsitektur **Direct Cloud Firestore Client**, sehingga setelah dipublikasikan/dideploy ke **Vercel** (maupun hosting lainnya), aplikasi **tetap 100% terhubung langsung ke Google Cloud Firestore (`penilaianjamrankuningan`) secara real-time** tanpa memerlukan backend terpisah dan bebas dari error server.
 
 ---
 
-## 🚀 Langkah Deploy Cepat ke Vercel
+### ✨ Peningkatan yang Diterapkan:
+1. **Direct Google Cloud Firestore Integration (`firebaseClient.ts`)**:
+   - Web browser juri dan admin terhubung langsung ke Firebase Firestore menggunakan SDK resmi Firebase v12.
+   - Master data (55 pangkalan, daftar pos lomba, akun juri, dan skor) otomatis disinkronkan secara aman.
+2. **Real-time Live Sync Antar-Perangkat**:
+   - Menggunakan listener `onSnapshot` Firestore, sehingga setiap juri menginput nilai dari HP di lapangan, layar Dashboard Admin, Rekap, Ranking, dan Pantauan Pos di laptop/proyektor langsung terupdate seketika (*live real-time*).
+3. **Pencegahan Error JSON (`Unexpected token 'A'`)**:
+   - Pemanggilan data dilengkapi *safe parsing* dan fallback otomatis ke Cloud Firestore saat endpoint `/api` serverless tidak aktif di Vercel.
+4. **Offline Resilience**:
+   - Jika jaringan internet di pos terputus sejenak, nilai tetap tersimpan aman di penyimpanan lokal HP dan otomatis terkirim saat internet kembali aktif.
 
-### Opsi 1: Melalui GitHub & Vercel Dashboard (Rekomendasi)
+---
 
-1. **Export ke GitHub**:
-   - Di Google AI Studio, klik menu **Settings (ikon gear)** di kanan atas -> pilih **Export to GitHub** (atau Download ZIP lalu push ke repository GitHub Anda).
-2. **Buka Vercel**:
-   - Masuk ke [https://vercel.com/new](https://vercel.com/new).
-3. **Import Project**:
-   - Pilih repository GitHub Anda.
-   - **Framework Preset**: Biarkan terdeteksi otomatis sebagai **Vite**.
-   - **Root Directory**: `./`
+### 🚀 Cara Deploy ke Vercel (vercel.app)
+
+#### Langkah 1: Export Project dari AI Studio
+1. Klik menu **Settings (ikon gear)** di pojok kanan atas AI Studio.
+2. Pilih **Export to GitHub** (atau **Download ZIP** lalu unggah ke repositori GitHub Anda).
+
+#### Langkah 2: Deploy di Vercel
+1. Buka [https://vercel.com/new](https://vercel.com/new) dan login.
+2. Pilih repositori GitHub proyek penilaian ini.
+3. Pengaturan build di Vercel:
+   - **Framework Preset**: `Vite`
    - **Build Command**: `vite build`
    - **Output Directory**: `dist`
-4. **Tambahkan Environment Variables di Vercel** (Opsional tapi direkomendasikan agar Firestore Cloud langsung aktif):
-   - `FIREBASE_PROJECT_ID` = `penilaianjamrankuningan`
-   - `FIREBASE_API_KEY` = `AIzaSyDIZJlVu0kBSbyppN21i3tENEMUKtCGnms`
-   - `FIREBASE_DATABASE_ID` = `(default)`
-5. **Klik "Deploy"**:
-   - Vercel akan memproses build dan memberikan tautan online gratis (misal: `https://penilaian-pramuka.vercel.app`).
+4. Klik **Deploy**.
 
----
-
-### Opsi 2: Menggunakan Vercel CLI (Dari Laptop/Komputer)
-
-Jika menggunakan terminal di komputer:
-```bash
-# 1. Pastikan Vercel CLI terpasang
-npm install -g vercel
-
-# 2. Login ke akun Vercel
-vercel login
-
-# 3. Jalankan deploy produksi
-vercel --prod
-```
-Semua pengaturan `vercel.json` akan otomatis terbaca oleh CLI.
+Aplikasi Anda akan langsung online (contoh: `https://penilaian-pramuka.vercel.app`) dan **langsung terhubung penuh dengan Cloud Firestore**.

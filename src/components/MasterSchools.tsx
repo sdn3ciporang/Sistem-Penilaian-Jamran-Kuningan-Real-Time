@@ -22,15 +22,17 @@ export const MasterSchools: React.FC<MasterSchoolsProps> = ({ schools, onRefresh
 
   const filtered = useMemo(() => {
     const q = search.toLowerCase();
-    return schools.filter((s) => {
-      const paddedId = String(s.id).padStart(2, '0');
-      return (
-        s.name.toLowerCase().includes(q) ||
-        s.code.toLowerCase().includes(q) ||
-        String(s.id).includes(q) ||
-        paddedId.includes(q)
-      );
-    });
+    return schools
+      .filter((s) => {
+        const paddedId = String(s.id).padStart(2, '0');
+        return (
+          s.name.toLowerCase().includes(q) ||
+          s.code.toLowerCase().includes(q) ||
+          String(s.id).includes(q) ||
+          paddedId.includes(q)
+        );
+      })
+      .sort((a, b) => Number(a.id) - Number(b.id));
   }, [schools, search]);
 
   const handleOpenAdd = () => {

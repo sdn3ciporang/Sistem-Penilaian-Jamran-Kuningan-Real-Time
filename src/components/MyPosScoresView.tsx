@@ -122,7 +122,7 @@ export const MyPosScoresView: React.FC<MyPosScoresViewProps> = ({
       }
     });
 
-    return list;
+    return list.sort((a, b) => Number(a.schoolId) - Number(b.schoolId));
   }, [schools, currentJudge, scoreMap]);
 
   // Filtered entries
