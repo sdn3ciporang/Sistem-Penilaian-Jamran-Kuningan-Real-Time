@@ -1,81 +1,127 @@
 {
   "entities": {
     "schools": {
-      "fields": {
-        "id": { "type": "number" },
-        "number": { "type": "number" },
-        "name": { "type": "string" },
-        "gudepPutra": { "type": "string" },
-        "gudepPutri": { "type": "string" },
-        "registrationCode": { "type": "string" }
-      }
+      "title": "School",
+      "description": "Master data pangkalan / sekolah peserta Jamran",
+      "type": "object",
+      "properties": {
+        "id": { "type": "number", "description": "Nomor urut pangkalan" },
+        "code": { "type": "string", "description": "Kode pangkalan" },
+        "name": { "type": "string", "description": "Nama sekolah / pangkalan" },
+        "hasPutra": { "type": "boolean", "description": "Memiliki regu putra" },
+        "hasPutri": { "type": "boolean", "description": "Memiliki regu putri" }
+      },
+      "required": ["id", "code", "name"]
     },
     "competitions": {
-      "fields": {
-        "id": { "type": "string" },
-        "code": { "type": "string" },
-        "name": { "type": "string" },
-        "category": { "type": "string" },
-        "minScore": { "type": "number" },
-        "maxScore": { "type": "number" },
-        "weight": { "type": "number" },
-        "isExploration": { "type": "boolean" },
-        "subPosts": { "type": "array" },
-        "hasTime": { "type": "boolean" },
-        "timeUnit": { "type": "string" }
-      }
+      "title": "Competition",
+      "description": "Master data pos mata lomba dan penjelajahan",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID unik mata lomba" },
+        "name": { "type": "string", "description": "Nama mata lomba" },
+        "order": { "type": "number", "description": "Urutan tampil lomba" },
+        "active": { "type": "boolean", "description": "Status aktif lomba" },
+        "isExploration": { "type": "boolean", "description": "Apakah lomba penjelajahan" },
+        "hasTime": { "type": "boolean", "description": "Apakah menggunakan pencatatan waktu stopwatch" },
+        "minScore": { "type": "number", "description": "Nilai minimal" },
+        "maxScore": { "type": "number", "description": "Nilai maksimal" }
+      },
+      "required": ["id", "name", "minScore", "maxScore"]
     },
     "judges": {
-      "fields": {
-        "id": { "type": "string" },
-        "username": { "type": "string" },
-        "password": { "type": "string" },
-        "name": { "type": "string" },
-        "role": { "type": "string" },
-        "assignedCompetitionId": { "type": "string" },
-        "assignedSubPostId": { "type": "string" },
-        "assignedCategory": { "type": "string" },
-        "isOnline": { "type": "boolean" },
-        "lastActive": { "type": "string" }
-      }
+      "title": "Judge",
+      "description": "Data akun juri pos dan administrator",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID juri" },
+        "username": { "type": "string", "description": "Username login juri" },
+        "password": { "type": "string", "description": "Password juri" },
+        "name": { "type": "string", "description": "Nama juri" },
+        "role": { "type": "string", "description": "Peran juri (ADMIN atau JUDGE)" },
+        "assignedCompetitionId": { "type": "string", "description": "ID mata lomba yang ditugaskan" },
+        "assignedSubPostId": { "type": "string", "description": "ID sub-pos penjelajahan jika ada" },
+        "assignedCategory": { "type": "string", "description": "Kategori regu yang dinilai (PUTRA, PUTRI, atau ALL)" },
+        "isActive": { "type": "boolean", "description": "Status aktif juri" }
+      },
+      "required": ["id", "username", "name", "role"]
     },
     "scores": {
-      "fields": {
-        "id": { "type": "string" },
-        "schoolId": { "type": "number" },
-        "teamCategory": { "type": "string" },
-        "competitionId": { "type": "string" },
-        "subPostId": { "type": "string" },
-        "score": { "type": "number" },
-        "timeInMs": { "type": "number" },
-        "timeFormatted": { "type": "string" },
-        "judgeId": { "type": "string" },
-        "judgeName": { "type": "string" },
-        "updatedAt": { "type": "string" },
-        "createdAt": { "type": "string" }
-      }
+      "title": "ScoreRecord",
+      "description": "Catatan nilai dan waktu per pangkalan per pos lomba",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID skor unik (score-{schoolId}-{category}-{compId})" },
+        "schoolId": { "type": "number", "description": "Nomor pangkalan peserta" },
+        "teamCategory": { "type": "string", "description": "Kategori regu (PUTRA atau PUTRI)" },
+        "competitionId": { "type": "string", "description": "ID mata lomba" },
+        "subPostId": { "type": "string", "description": "ID sub-pos jika ada" },
+        "score": { "type": "number", "description": "Nilai angka dari juri" },
+        "timeInMs": { "type": "number", "description": "Waktu tempuh dalam milidetik" },
+        "timeFormatted": { "type": "string", "description": "Waktu terformat (MM:SS:mmm)" },
+        "notes": { "type": "string", "description": "Catatan khusus dari juri" },
+        "judgeId": { "type": "string", "description": "ID juri penilai" },
+        "judgeName": { "type": "string", "description": "Nama juri penilai" },
+        "posName": { "type": "string", "description": "Nama pos penilaian" },
+        "timestamp": { "type": "string", "description": "Waktu input ISO" }
+      },
+      "required": ["id", "schoolId", "teamCategory", "competitionId", "score", "judgeId", "timestamp"]
     },
     "settings": {
-      "fields": {
-        "eventTitle": { "type": "string" },
-        "defaultMinScore": { "type": "number" },
-        "defaultMaxScore": { "type": "number" },
-        "autoSyncIntervalSec": { "type": "number" },
-        "allowOffline": { "type": "boolean" },
-        "theme": { "type": "string" },
-        "publicShowRanking": { "type": "boolean" },
-        "publicShowMonitor": { "type": "boolean" }
-      }
+      "title": "AppSettings",
+      "description": "Pengaturan umum aplikasi Jamran",
+      "type": "object",
+      "properties": {
+        "eventTitle": { "type": "string", "description": "Judul acara kegiatan" },
+        "defaultMinScore": { "type": "number", "description": "Nilai minimal default" },
+        "defaultMaxScore": { "type": "number", "description": "Nilai maksimal default" },
+        "autoSyncIntervalSec": { "type": "number", "description": "Interval sinkronisasi" },
+        "allowOffline": { "type": "boolean", "description": "Izinkan mode offline" },
+        "theme": { "type": "string", "description": "Tema tampilan" }
+      },
+      "required": ["eventTitle"]
     },
     "activity_logs": {
-      "fields": {
-        "id": { "type": "string" },
-        "judgeId": { "type": "string" },
-        "judgeName": { "type": "string" },
-        "action": { "type": "string" },
-        "details": { "type": "string" },
-        "timestamp": { "type": "string" }
-      }
+      "title": "ActivityLog",
+      "description": "Log aktivitas input dan perubahan nilai",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "description": "ID log" },
+        "timestamp": { "type": "string", "description": "Waktu kejadian" },
+        "judgeName": { "type": "string", "description": "Nama juri" },
+        "posName": { "type": "string", "description": "Nama pos" },
+        "schoolName": { "type": "string", "description": "Nama pangkalan" },
+        "teamCategory": { "type": "string", "description": "Kategori regu" },
+        "newScore": { "type": "number", "description": "Nilai baru" },
+        "actionType": { "type": "string", "description": "Jenis aksi (CREATE, UPDATE, DELETE)" }
+      },
+      "required": ["id", "timestamp", "judgeName", "actionType"]
+    }
+  },
+  "firestore": {
+    "/schools/{schoolId}": {
+      "schema": "schools",
+      "description": "Master data pangkalan"
+    },
+    "/competitions/{compId}": {
+      "schema": "competitions",
+      "description": "Master data mata lomba"
+    },
+    "/judges/{judgeId}": {
+      "schema": "judges",
+      "description": "Master data juri dan admin"
+    },
+    "/scores/{scoreId}": {
+      "schema": "scores",
+      "description": "Koleksi nilai live dari juri"
+    },
+    "/settings/{settingId}": {
+      "schema": "settings",
+      "description": "Pengaturan aplikasi"
+    },
+    "/activity_logs/{logId}": {
+      "schema": "activity_logs",
+      "description": "Log histori penilaian"
     }
   }
 }

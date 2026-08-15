@@ -231,13 +231,17 @@ export class ApiService {
     this.updateLocalScoreCache(scoreRecord);
 
     // 2. Direct Cloud Firestore write (Guarantees persistence on Vercel)
+    let firestoreSaved = false;
     try {
       await saveScoreToFirestoreClient(scoreRecord, logItem);
-    } catch (fsErr) {
-      console.warn('[ApiService] Firestore direct save notice:', fsErr);
+      firestoreSaved = true;
+    } catch (fsErr: any) {
+      console.error('[ApiService] Firestore direct save error:', fsErr);
+      // If Firestore failed, queue for auto-sync
+      this.saveOfflineQueue(payload);
     }
 
-    // 3. Also notify Express backend if running
+    // 3. Also notify Express backend if running (Local dev / container)
     try {
       await safeFetchJson('/api/scores', {
         method: 'POST',
@@ -245,14 +249,17 @@ export class ApiService {
         body: JSON.stringify(payload),
       });
     } catch {
-      // Backend not running on static Vercel, which is fine since Firestore saved it
+      // Backend not running on static Vercel, which is expected
     }
 
     return {
       success: true,
+      isOffline: !firestoreSaved,
       scoreRecord,
       logItem,
-      message: 'Nilai berhasil disimpan ke Cloud Firestore!',
+      message: firestoreSaved
+        ? 'Nilai berhasil disimpan & disinkronkan ke Cloud Firestore!'
+        : 'Nilai tersimpan di HP & masuk antrean sinkronisasi Cloud Firestore.',
     };
   }
 

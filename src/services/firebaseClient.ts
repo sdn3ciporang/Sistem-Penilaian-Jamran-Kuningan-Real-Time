@@ -48,6 +48,29 @@ export function getClientDb(): Firestore {
   return dbInstance;
 }
 
+/**
+ * Sanitizes any data payload before sending to Firestore.
+ * Strips all `undefined` values recursively because Firestore throws an error on `undefined`.
+ */
+export function sanitizeForFirestore<T>(data: T): T {
+  if (data === null || data === undefined) {
+    return null as unknown as T;
+  }
+  if (Array.isArray(data)) {
+    return data.map((item) => sanitizeForFirestore(item)) as unknown as T;
+  }
+  if (typeof data === 'object' && !(data instanceof Date)) {
+    const cleanObj: Record<string, any> = {};
+    for (const [key, value] of Object.entries(data)) {
+      if (value !== undefined) {
+        cleanObj[key] = sanitizeForFirestore(value);
+      }
+    }
+    return cleanObj as T;
+  }
+  return data;
+}
+
 // 1. Fetch All Data Directly from Cloud Firestore
 export async function fetchAllFromFirestoreClient(): Promise<{
   schools: School[];
@@ -144,18 +167,21 @@ export async function seedMasterDataToFirestoreClient(
   const batch = writeBatch(db);
 
   for (const s of schools) {
-    batch.set(doc(db, 'schools', `school_${s.id}`), s);
+    batch.set(doc(db, 'schools', `school_${s.id}`), sanitizeForFirestore(s));
   }
   for (const c of competitions) {
-    batch.set(doc(db, 'competitions', c.id), c);
+    batch.set(doc(db, 'competitions', c.id), sanitizeForFirestore(c));
   }
   for (const j of judges) {
-    batch.set(doc(db, 'judges', j.id), j);
+    batch.set(doc(db, 'judges', j.id), sanitizeForFirestore(j));
   }
-  batch.set(doc(db, 'settings', 'app_settings'), {
-    ...settings,
-    updatedAt: new Date().toISOString(),
-  });
+  batch.set(
+    doc(db, 'settings', 'app_settings'),
+    sanitizeForFirestore({
+      ...settings,
+      updatedAt: new Date().toISOString(),
+    })
+  );
 
   await batch.commit();
   console.log('[Firestore Client] Master data berhasil disemai ke Cloud Firestore!');
@@ -164,27 +190,34 @@ export async function seedMasterDataToFirestoreClient(
 // 3. Save / Update Score
 export async function saveScoreToFirestoreClient(score: ScoreRecord, log?: ActivityLog): Promise<void> {
   const db = getClientDb();
-  const batch = writeBatch(db);
+  const cleanScore = sanitizeForFirestore(score);
 
-  batch.set(doc(db, 'scores', score.id), score);
+  // Directly set the score document
+  await setDoc(doc(db, 'scores', score.id), cleanScore);
+
+  // Also record activity log if provided
   if (log) {
-    batch.set(doc(db, 'activity_logs', log.id), log);
+    try {
+      const cleanLog = sanitizeForFirestore(log);
+      await setDoc(doc(db, 'activity_logs', log.id), cleanLog);
+    } catch (logErr) {
+      console.warn('[Firestore Client] Activity log recording notice:', logErr);
+    }
   }
-
-  await batch.commit();
 }
 
 // 4. Delete Score
 export async function deleteScoreFromFirestoreClient(scoreId: string, log?: ActivityLog): Promise<void> {
   const db = getClientDb();
-  const batch = writeBatch(db);
-
-  batch.delete(doc(db, 'scores', scoreId));
+  await deleteDoc(doc(db, 'scores', scoreId));
   if (log) {
-    batch.set(doc(db, 'activity_logs', log.id), log);
+    try {
+      const cleanLog = sanitizeForFirestore(log);
+      await setDoc(doc(db, 'activity_logs', log.id), cleanLog);
+    } catch (logErr) {
+      console.warn('[Firestore Client] Activity log recording notice:', logErr);
+    }
   }
-
-  await batch.commit();
 }
 
 // 5. Batch Upload Scores
@@ -196,7 +229,8 @@ export async function batchUploadScoresToFirestoreClient(batchScores: ScoreRecor
     const chunk = batchScores.slice(i, i + chunkSize);
     const batch = writeBatch(db);
     for (const score of chunk) {
-      batch.set(doc(db, 'scores', score.id), score);
+      const cleanScore = sanitizeForFirestore(score);
+      batch.set(doc(db, 'scores', score.id), cleanScore);
     }
     await batch.commit();
   }
@@ -220,7 +254,8 @@ export async function clearAllScoresInFirestoreClient(scores: ScoreRecord[]): Pr
 // 7. Save / Delete School
 export async function saveSchoolToFirestoreClient(school: School): Promise<void> {
   const db = getClientDb();
-  await setDoc(doc(db, 'schools', `school_${school.id}`), school);
+  const cleanSchool = sanitizeForFirestore(school);
+  await setDoc(doc(db, 'schools', `school_${school.id}`), cleanSchool);
 }
 
 export async function deleteSchoolFromFirestoreClient(schoolId: number): Promise<void> {
@@ -231,7 +266,8 @@ export async function deleteSchoolFromFirestoreClient(schoolId: number): Promise
 // 8. Save / Delete Competition
 export async function saveCompetitionToFirestoreClient(comp: Competition): Promise<void> {
   const db = getClientDb();
-  await setDoc(doc(db, 'competitions', comp.id), comp);
+  const cleanComp = sanitizeForFirestore(comp);
+  await setDoc(doc(db, 'competitions', comp.id), cleanComp);
 }
 
 export async function deleteCompetitionFromFirestoreClient(compId: string): Promise<void> {
@@ -242,7 +278,8 @@ export async function deleteCompetitionFromFirestoreClient(compId: string): Prom
 // 9. Save / Delete Judge
 export async function saveJudgeToFirestoreClient(judge: Judge): Promise<void> {
   const db = getClientDb();
-  await setDoc(doc(db, 'judges', judge.id), judge);
+  const cleanJudge = sanitizeForFirestore(judge);
+  await setDoc(doc(db, 'judges', judge.id), cleanJudge);
 }
 
 export async function deleteJudgeFromFirestoreClient(judgeId: string): Promise<void> {
@@ -253,10 +290,11 @@ export async function deleteJudgeFromFirestoreClient(judgeId: string): Promise<v
 // 10. Save Settings
 export async function saveSettingsToFirestoreClient(settings: AppSettings): Promise<void> {
   const db = getClientDb();
-  await setDoc(doc(db, 'settings', 'app_settings'), {
+  const cleanSettings = sanitizeForFirestore({
     ...settings,
     updatedAt: new Date().toISOString(),
   });
+  await setDoc(doc(db, 'settings', 'app_settings'), cleanSettings);
 }
 
 // 11. Real-time Real-Time Listener on Cloud Firestore (Works on Vercel without Express!)
