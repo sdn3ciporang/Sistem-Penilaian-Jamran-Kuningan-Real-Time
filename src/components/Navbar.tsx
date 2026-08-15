@@ -71,7 +71,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                 <span className="font-semibold text-amber-300">55 Pangkalan</span>
                 <span>•</span>
                 <span className="capitalize text-sky-200">
-                  {currentJudge ? (isAdmin ? 'Mode Admin' : `Juri ${currentJudge.name}`) : 'Akses Publik (Read-Only)'}
+                  {currentJudge ? (isAdmin ? 'Mode Admin' : `Juri ${currentJudge?.name || currentJudge?.username || 'Petugas'}`) : 'Akses Publik (Read-Only)'}
                 </span>
               </div>
             </div>

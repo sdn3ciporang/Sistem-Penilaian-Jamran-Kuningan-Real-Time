@@ -53,21 +53,22 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
 
   // All valid non-admin judges
   const allEligibleJudges = useMemo(() => {
-    return judges.filter((j) => !(j.role === 'ADMIN' && j.username === 'admin'));
+    return (judges || []).filter((j) => j && !(j.role === 'ADMIN' && j.username === 'admin'));
   }, [judges]);
 
   // Filtered judges according to Category & Search
   const filteredJudges = useMemo(() => {
     return allEligibleJudges.filter((j) => {
+      if (!j) return false;
       if (filterCat === 'PUTRA' && j.assignedCategory === 'PUTRI') return false;
       if (filterCat === 'PUTRI' && j.assignedCategory === 'PUTRA') return false;
 
       if (searchQuery.trim()) {
         const q = searchQuery.toLowerCase();
-        const comp = competitions.find((c) => c.id === j.assignedCompetitionId);
-        const matchName = j.name.toLowerCase().includes(q);
-        const matchUsername = j.username.toLowerCase().includes(q);
-        const matchComp = comp?.name.toLowerCase().includes(q);
+        const comp = (competitions || []).find((c) => c && c.id === j.assignedCompetitionId);
+        const matchName = (j.name || '').toLowerCase().includes(q);
+        const matchUsername = (j.username || '').toLowerCase().includes(q);
+        const matchComp = (comp?.name || '').toLowerCase().includes(q);
         return matchName || matchUsername || matchComp;
       }
 
@@ -225,7 +226,7 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
       doc.setTextColor(15, 23, 42);
       doc.setFont('courier', 'bold');
       doc.setFontSize(9);
-      doc.text(`USER : ${j.username}`, credX + 3, credY + 13);
+      doc.text(`USER : ${j?.username || '-'}`, credX + 3, credY + 13);
 
       const pwd = j.password || 'juri123';
       doc.text(`PASS : ${pwd}`, credX + 3, credY + 22);
@@ -265,7 +266,7 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
   };
 
   const handleCopyCredentials = (j: Judge) => {
-    const text = `⚜️ *AKUN LOGIN JURI PRAMUKA*\nNama: ${j.name}\nPos: ${getPosName(j)}\nKategori: ${getReguLabel(j.assignedCategory)}\nLink: ${APP_URL}\n\nUsername: *${j.username}*\nPassword: *${j.password || 'juri123'}*\n\n💬 Helpdesk WA Admin: 089625029588`;
+    const text = `⚜️ *AKUN LOGIN JURI PRAMUKA*\nNama: ${j?.name || 'Juri'}\nPos: ${getPosName(j)}\nKategori: ${getReguLabel(j?.assignedCategory)}\nLink: ${APP_URL}\n\nUsername: *${j?.username || '-'}*\nPassword: *${j?.password || 'juri123'}*\n\n💬 Helpdesk WA Admin: 089625029588`;
     navigator.clipboard.writeText(text);
     setCopiedId(j.id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -489,7 +490,7 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
                         </div>
                         <div className="font-mono text-[10px] font-bold text-slate-900 flex justify-between items-center bg-white px-2 py-0.5 rounded border border-amber-200">
                           <span className="text-slate-400 text-[9px]">USER:</span>
-                          <span className="text-blue-900 font-black">{j.username}</span>
+                          <span className="text-blue-900 font-black">{j?.username || '-'}</span>
                         </div>
                         <div className="font-mono text-[10px] font-bold text-slate-900 flex justify-between items-center bg-white px-2 py-0.5 rounded border border-amber-200">
                           <span className="text-slate-400 text-[9px]">PASS:</span>

@@ -46,11 +46,12 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
   };
 
   const handleOpenEdit = (j: Judge) => {
+    if (!j) return;
     setEditingJudge(j);
-    setUsername(j.username);
+    setUsername(j.username || '');
     setPassword(j.password || (j.role === 'ADMIN' ? 'admin123' : 'juri123'));
-    setName(j.name);
-    setRole(j.role);
+    setName(j.name || '');
+    setRole(j.role || 'JUDGE');
     setAssignedCompId(j.assignedCompetitionId || '');
     setAssignedSubPostId(j.assignedSubPostId || '');
     setAssignedCategory(j.assignedCategory || 'ALL');
@@ -435,11 +436,12 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 text-sm font-medium">
-              {judges.map((j) => {
-                const comp = competitions.find((c) => c.id === j.assignedCompetitionId);
+              {(judges || []).map((j) => {
+                if (!j) return null;
+                const comp = (competitions || []).find((c) => c && c.id === j.assignedCompetitionId);
                 let posName = comp?.name || 'Seluruh Akses System';
                 if (comp?.isExploration && comp.subPosts && j.assignedSubPostId) {
-                  const sub = comp.subPosts.find((sp) => sp.id === j.assignedSubPostId);
+                  const sub = comp.subPosts.find((sp) => sp && sp.id === j.assignedSubPostId);
                   if (sub) posName = `${comp.name} - ${sub.name}`;
                 }
 
@@ -449,9 +451,9 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
 
                 return (
                   <tr key={j.id} className="hover:bg-slate-50 transition-colors">
-                    <td className="py-3 px-4 font-extrabold text-slate-900">{j.name}</td>
+                    <td className="py-3 px-4 font-extrabold text-slate-900">{j.name || '-'}</td>
                     <td className="py-3 px-4 font-mono text-xs text-slate-700 bg-slate-50 rounded">
-                      <span className="font-bold text-blue-900">{j.username}</span>
+                      <span className="font-bold text-blue-900">{j.username || '-'}</span>
                     </td>
                     <td className="py-3 px-4 font-mono text-xs text-slate-700">
                       <div className="flex items-center gap-1.5">
@@ -528,7 +530,7 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
                         >
                           <Edit2 className="w-4 h-4" />
                         </button>
-                        {j.username !== 'admin' && (
+                        {j?.username !== 'admin' && (
                           <button
                             type="button"
                             onClick={() => setDeletingJudge(j)}
@@ -697,8 +699,8 @@ export const MasterJudges: React.FC<MasterJudgesProps> = ({ judges, competitions
             </div>
 
             <div className="bg-slate-50 p-3.5 rounded-xl border border-slate-200 text-xs space-y-1">
-              <div className="font-bold text-slate-900">{deletingJudge.name}</div>
-              <div className="font-mono text-slate-600">Username: <span className="font-bold text-blue-900">{deletingJudge.username}</span></div>
+              <div className="font-bold text-slate-900">{deletingJudge?.name}</div>
+              <div className="font-mono text-slate-600">Username: <span className="font-bold text-blue-900">{deletingJudge?.username}</span></div>
             </div>
 
             <p className="text-xs text-slate-600">

@@ -187,7 +187,7 @@ export const MyPosScoresView: React.FC<MyPosScoresViewProps> = ({
               <span>Daftar Nilai: {posNameDisplay}</span>
             </h1>
             <p className="text-xs text-blue-200 mt-1">
-              Juri Petugas: <strong className="text-white font-bold">{currentJudge?.name}</strong> (@{currentJudge?.username})
+              Juri Petugas: <strong className="text-white font-bold">{currentJudge?.name || currentJudge?.username || 'Petugas'}</strong> {currentJudge?.username ? `(@${currentJudge.username})` : ''}
             </p>
           </div>
 

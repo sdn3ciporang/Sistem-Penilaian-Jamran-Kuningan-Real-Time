@@ -406,7 +406,7 @@ app.post('/api/login', (req, res) => {
     return res.status(400).json({ error: 'Username wajib diisi' });
   }
 
-  const judge = judgesData.find((j) => j.username.toLowerCase() === username.toLowerCase().trim() && j.isActive);
+  const judge = judgesData.find((j) => j && j.username && j.username.toLowerCase() === username.toLowerCase().trim() && j.isActive);
   if (!judge) {
     return res.status(401).json({ error: 'Pengguna tidak ditemukan atau akun dinonaktifkan.' });
   }
@@ -819,7 +819,7 @@ app.post('/api/judges/batch', (req, res) => {
     if (item.username && item.name) {
       // Check if judge with same username exists
       const existingIdx = judgesData.findIndex(
-        (j) => j.username.toLowerCase() === item.username.toLowerCase().trim()
+        (j) => j && j.username && j.username.toLowerCase() === item.username.toLowerCase().trim()
       );
 
       const judgeObj: Judge = {
@@ -851,7 +851,7 @@ app.post('/api/judges/batch', (req, res) => {
 
 app.put('/api/judges/:id', (req, res) => {
   const { id } = req.params;
-  const idx = judgesData.findIndex((j) => j.id === id);
+  const idx = judgesData.findIndex((j) => j && j.id === id);
   if (idx === -1) return res.status(404).json({ error: 'Juri tidak ditemukan' });
 
   judgesData[idx] = { ...judgesData[idx], ...req.body };
@@ -863,8 +863,8 @@ app.put('/api/judges/:id', (req, res) => {
 
 app.delete('/api/judges-all-non-admin', (req, res) => {
   const initialCount = judgesData.length;
-  const toDelete = judgesData.filter((j) => j.username !== 'admin');
-  judgesData = judgesData.filter((j) => j.username === 'admin');
+  const toDelete = judgesData.filter((j) => j && j.username !== 'admin');
+  judgesData = judgesData.filter((j) => j && j.username === 'admin');
   saveStorage();
   for (const j of toDelete) {
     deleteJudgeFromFirestore(j.id);

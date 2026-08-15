@@ -30,8 +30,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   if (!isOpen) return null;
 
   // Determine if the entering user is an Admin
-  const matchingJudge = judges.find(
-    (j) => j.username.toLowerCase() === usernameInput.trim().toLowerCase()
+  const matchingJudge = (judges || []).find(
+    (j) => j && j.username && j.username.toLowerCase() === usernameInput.trim().toLowerCase()
   );
   const isAdminLogin =
     usernameInput.trim().toLowerCase() === 'admin' || matchingJudge?.role === 'ADMIN';
@@ -61,7 +61,8 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }
   };
 
-  const handleSelectQuickJudge = (j: Judge) => {
+  const handleSelectQuickJudge = (j?: Judge | null) => {
+    if (!j || !j.username) return;
     setUsernameInput(j.username);
     setPasswordInput('');
     setErrorMsg('');
@@ -70,8 +71,16 @@ export const LoginModal: React.FC<LoginModalProps> = ({
     }, 100);
   };
 
-  const adminUser = judges.find((j) => j.role === 'ADMIN') || judges[0];
-  const judgeUsers = judges.filter((j) => j.role === 'JUDGE' && j.isActive);
+  const adminUser = (judges || []).find((j) => j && j.role === 'ADMIN') || (judges && judges[0]) || {
+    id: 'user-admin',
+    username: 'admin',
+    password: 'admin123',
+    name: 'Administrator Utama',
+    role: 'ADMIN' as const,
+    assignedCompetitionId: '',
+    isActive: true,
+  };
+  const judgeUsers = (judges || []).filter((j) => j && j.role === 'JUDGE' && j.isActive);
 
   return (
     <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto">
@@ -118,15 +127,15 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </div>
           <button
             type="button"
-            onClick={() => handleSelectQuickJudge(adminUser)}
+            onClick={() => adminUser && handleSelectQuickJudge(adminUser)}
             className={`w-full py-2.5 px-4 rounded-xl text-xs font-bold flex items-center justify-between border transition-all cursor-pointer ${
-              usernameInput === adminUser.username
+              usernameInput === adminUser?.username
                 ? 'bg-blue-900 text-white border-blue-900 shadow-md'
                 : 'bg-white text-blue-900 border-blue-300 hover:bg-blue-100/50'
             }`}
           >
-            <span>Isi Username Admin ({adminUser.name})</span>
-            {usernameInput === adminUser.username && <CheckCircle2 className="w-4 h-4 text-amber-300" />}
+            <span>Isi Username Admin ({adminUser?.name || 'Administrator'})</span>
+            {usernameInput === adminUser?.username && <CheckCircle2 className="w-4 h-4 text-amber-300" />}
           </button>
         </div>
 
@@ -200,10 +209,11 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           
           <div className="max-h-44 overflow-y-auto rounded-xl border border-slate-200 divide-y divide-slate-100 text-xs bg-slate-50">
             {judgeUsers.map((j) => {
-              const comp = competitions.find((c) => c.id === j.assignedCompetitionId);
+              if (!j || !j.id) return null;
+              const comp = (competitions || []).find((c) => c && c.id === j.assignedCompetitionId);
               let label = comp?.name || 'Pos';
               if (comp?.isExploration && comp.subPosts && j.assignedSubPostId) {
-                const sub = comp.subPosts.find((sp) => sp.id === j.assignedSubPostId);
+                const sub = comp.subPosts.find((sp) => sp && sp.id === j.assignedSubPostId);
                 if (sub) label = `${comp.name} - ${sub.name}`;
               }
 
