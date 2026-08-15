@@ -1,35 +1,44 @@
-# Panduan Deployment & Koneksi Cloud Firestore di Vercel
+# Panduan Lengkap Deployment ke Vercel (vercel.app)
 
-Aplikasi **Sistem Penilaian Lomba Pramuka Real-Time** kini telah dikonfigurasi dengan arsitektur **Direct Cloud Firestore Client**, sehingga setelah dipublikasikan/dideploy ke **Vercel** (maupun hosting lainnya), aplikasi **tetap 100% terhubung langsung ke Google Cloud Firestore (`penilaianjamrankuningan`) secara real-time** tanpa memerlukan backend terpisah dan bebas dari error server.
-
----
-
-### ✨ Peningkatan yang Diterapkan:
-1. **Direct Google Cloud Firestore Integration (`firebaseClient.ts`)**:
-   - Web browser juri dan admin terhubung langsung ke Firebase Firestore menggunakan SDK resmi Firebase v12.
-   - Master data (55 pangkalan, daftar pos lomba, akun juri, dan skor) otomatis disinkronkan secara aman.
-2. **Real-time Live Sync Antar-Perangkat**:
-   - Menggunakan listener `onSnapshot` Firestore, sehingga setiap juri menginput nilai dari HP di lapangan, layar Dashboard Admin, Rekap, Ranking, dan Pantauan Pos di laptop/proyektor langsung terupdate seketika (*live real-time*).
-3. **Pencegahan Error JSON (`Unexpected token 'A'`)**:
-   - Pemanggilan data dilengkapi *safe parsing* dan fallback otomatis ke Cloud Firestore saat endpoint `/api` serverless tidak aktif di Vercel.
-4. **Offline Resilience**:
-   - Jika jaringan internet di pos terputus sejenak, nilai tetap tersimpan aman di penyimpanan lokal HP dan otomatis terkirim saat internet kembali aktif.
+Aplikasi **Sistem Penilaian Lomba Pramuka Real-Time** telah dirancang dengan arsitektur **Hybrid Cloud (Direct Firebase Client + Serverless Backend)** sehingga **100% seluruh fitur dapat berjalan mulus di Vercel**.
 
 ---
 
-### 🚀 Cara Deploy ke Vercel (vercel.app)
+### 🌟 Fitur-Fitur yang Siap Berjalan di Vercel:
+1. **Input Nilai Real-Time oleh Juri**:
+   - Terhubung langsung ke Cloud Firestore (`penilaianjamrankuningan`).
+   - Setiap nilai yang disimpan langsung muncul di layar Admin, Rekap, dan Ranking tanpa jeda.
+2. **Master Pangkalan & Master Juri**:
+   - Tambah, edit, hapus data.
+   - **Download Template Excel** & **Import Excel massal** berjalan 100% di browser.
+3. **Upload Nilai Massal (Excel Scoring)**:
+   - Import file nilai Excel per pos / semua pos sekaligus dengan kalkulasi otomatis.
+4. **Pantauan Pos & Real-Time Monitor**:
+   - Sinkronisasi instan via Firebase `onSnapshot` listener.
+5. **Kalkulasi Juara & Tie-breaker**:
+   - Perhitungan Juara Umum, Juara Regu Putra, Juara Regu Putri, dan Juara Favorit.
+6. **Cetak & Ekspor Dokumen**:
+   - Cetak Kartu QR Juri (PDF), Piagam Juara (PDF), dan Berita Acara Rekap Nilai (Excel/PDF).
+7. **Offline Mode & Stopwatch**:
+   - Stopwatch presisi milidetik dan penyimpanan otomatis ke antrean lokal jika sinyal internet pos drop.
 
-#### Langkah 1: Export Project dari AI Studio
-1. Klik menu **Settings (ikon gear)** di pojok kanan atas AI Studio.
-2. Pilih **Export to GitHub** (atau **Download ZIP** lalu unggah ke repositori GitHub Anda).
+---
 
-#### Langkah 2: Deploy di Vercel
-1. Buka [https://vercel.com/new](https://vercel.com/new) dan login.
-2. Pilih repositori GitHub proyek penilaian ini.
-3. Pengaturan build di Vercel:
-   - **Framework Preset**: `Vite`
-   - **Build Command**: `vite build`
-   - **Output Directory**: `dist`
-4. Klik **Deploy**.
+### 🚀 3 Langkah Mudah Deploy ke Vercel:
 
-Aplikasi Anda akan langsung online (contoh: `https://penilaian-pramuka.vercel.app`) dan **langsung terhubung penuh dengan Cloud Firestore**.
+#### 1. Export Proyek dari AI Studio
+- Buka menu **Settings (ikon gear)** di AI Studio (kanan atas).
+- Klik **Export to GitHub** (atau unduh sebagai **ZIP** dan push ke akun GitHub Anda).
+
+#### 2. Import Repositori di Vercel
+- Kunjungi dashboard **[vercel.com/new](https://vercel.com/new)**.
+- Hubungkan akun GitHub Anda dan pilih repositori proyek ini.
+
+#### 3. Konfigurasi Build & Deploy
+- Vercel akan otomatis mengenali berkas `vercel.json`:
+  - **Framework Preset**: `Vite`
+  - **Build Command**: `vite build`
+  - **Output Directory**: `dist`
+- Klik **Deploy**.
+
+Dalam hitungan detik, aplikasi Anda aktif di URL Vercel (misalnya `https://lomba-pramuka.vercel.app`) dan langsung siap digunakan oleh seluruh juri dan panitia di lapangan!
