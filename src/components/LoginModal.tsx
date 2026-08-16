@@ -1,12 +1,13 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { Judge, Competition, TeamCategory } from '../types';
 import { ApiService } from '../services/apiService';
-import { LogIn, Shield, User, Lock, Key, Eye, EyeOff, CheckCircle2, Users } from 'lucide-react';
+import { LogIn, Shield, User, Lock, Key, Eye, EyeOff, CheckCircle2, Users, QrCode, Sparkles } from 'lucide-react';
 
 interface LoginModalProps {
   isOpen: boolean;
   judges: Judge[];
   competitions: Competition[];
+  initialUsername?: string;
   onLoginSuccess: (user: Judge, selectedCategory?: TeamCategory) => void;
   onViewPublicRekap: () => void;
   onClose?: () => void;
@@ -16,6 +17,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   isOpen,
   judges,
   competitions,
+  initialUsername,
   onLoginSuccess,
   onViewPublicRekap,
 }) => {
@@ -24,8 +26,27 @@ export const LoginModal: React.FC<LoginModalProps> = ({
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMsg, setErrorMsg] = useState('');
+  const [isFromQr, setIsFromQr] = useState(false);
 
   const passwordInputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-fill from prop or URL search param on open
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramUser = initialUsername || urlParams.get('username') || urlParams.get('user') || '';
+
+    if (paramUser.trim()) {
+      setUsernameInput(paramUser.trim());
+      setIsFromQr(true);
+      setErrorMsg('');
+      const timer = setTimeout(() => {
+        passwordInputRef.current?.focus();
+      }, 250);
+      return () => clearTimeout(timer);
+    }
+  }, [isOpen, initialUsername]);
 
   if (!isOpen) return null;
 
@@ -141,10 +162,30 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
         {/* Form Login (Username + Password + Dropdown Regu + Submit Button) */}
         <form onSubmit={handleCustomLogin} className="space-y-3.5 pt-2 border-t border-slate-100">
-          <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
-            <Key className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Form Login Akun Juri / Admin</span>
+          <div className="flex items-center justify-between">
+            <div className="text-xs font-black text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+              <Key className="w-3.5 h-3.5 text-indigo-600" />
+              <span>Form Login Akun Juri / Admin</span>
+            </div>
+            {isFromQr && usernameInput && (
+              <span className="inline-flex items-center gap-1 text-[10px] font-bold bg-emerald-100 text-emerald-800 px-2 py-0.5 rounded-full border border-emerald-300 animate-pulse">
+                <QrCode className="w-3 h-3 text-emerald-600" />
+                <span>Scan QR Terdeteksi</span>
+              </span>
+            )}
           </div>
+
+          {isFromQr && matchingJudge && (
+            <div className="p-3 bg-gradient-to-r from-emerald-50 to-blue-50 border border-emerald-200 rounded-xl space-y-1">
+              <div className="text-[11px] font-black text-emerald-950 flex items-center gap-1.5">
+                <Sparkles className="w-3.5 h-3.5 text-emerald-600" />
+                <span>Selamat Bertugas, {matchingJudge.name}!</span>
+              </div>
+              <p className="text-[10px] text-emerald-800 font-medium">
+                Username telah terisi otomatis dari scan QR. Silakan ketik password Anda di bawah untuk mulai menilai.
+              </p>
+            </div>
+          )}
 
           <div>
             <label className="block text-[11px] font-bold text-slate-600 mb-1">

@@ -130,7 +130,19 @@ export default function App() {
   // System UI States
   const [isOnline, setIsOnline] = useState<boolean>(navigator.onLine);
   const [offlineCount, setOfflineCount] = useState<number>(0);
+  const [urlPreFilledUser, setUrlPreFilledUser] = useState<string>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('username') || params.get('user') || '';
+    } catch {
+      return '';
+    }
+  });
   const [loginModalOpen, setLoginModalOpen] = useState<boolean>(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('username') || params.get('user')) return true;
+    } catch {}
     // Open login modal only if no logged user is stored
     return !localStorage.getItem('pramuka_logged_user');
   });
@@ -228,9 +240,28 @@ export default function App() {
     loadInitialData();
     updateOfflineCount();
 
-    // Default auto login as Admin if not logged in
+    // Check if query parameter username is present in URL (e.g. from scanned QR code)
+    const urlParams = new URLSearchParams(window.location.search);
+    const paramUser = urlParams.get('username') || urlParams.get('user');
+
     const storedJudge = localStorage.getItem('pramuka_logged_user');
-    if (storedJudge) {
+    if (paramUser) {
+      setUrlPreFilledUser(paramUser);
+      let isAlreadyLoggedInSameUser = false;
+      if (storedJudge) {
+        try {
+          const parsed = JSON.parse(storedJudge);
+          if (parsed?.username?.toLowerCase() === paramUser.toLowerCase()) {
+            isAlreadyLoggedInSameUser = true;
+            setCurrentJudge(parsed);
+            if (parsed.role === 'JUDGE') setActiveTab('judge_portal');
+          }
+        } catch {}
+      }
+      if (!isAlreadyLoggedInSameUser) {
+        setLoginModalOpen(true);
+      }
+    } else if (storedJudge) {
       try {
         const parsed = JSON.parse(storedJudge);
         setCurrentJudge(parsed);
@@ -523,6 +554,7 @@ export default function App() {
         isOpen={loginModalOpen}
         judges={judges}
         competitions={competitions}
+        initialUsername={urlPreFilledUser}
         onLoginSuccess={handleLoginSuccess}
         onViewPublicRekap={() => {
           setLoginModalOpen(false);

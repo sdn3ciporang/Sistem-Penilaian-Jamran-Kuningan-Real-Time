@@ -33,28 +33,54 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedJudgeIds, setSelectedJudgeIds] = useState<string[]>([]);
   const [copiedId, setCopiedId] = useState<string | null>(null);
-  const [qrCodeDataUrl, setQrCodeDataUrl] = useState<string>('');
+  const [qrMap, setQrMap] = useState<Record<string, string>>({});
 
-  const APP_URL = 'https://sistem-penilaian-jamran-kuningan-real-time.ai.studio';
+  const APP_URL = 'https://sistem-penilaian-jamran-kuningan-re-azure.vercel.app';
 
-  // Generate QR code Data URL on mount
-  useEffect(() => {
-    QRCode.toDataURL(APP_URL, {
-      margin: 1,
-      width: 300,
-      color: {
-        dark: '#0f172a', // slate-900 navy
-        light: '#ffffff',
-      },
-    })
-      .then((url) => setQrCodeDataUrl(url))
-      .catch((err) => console.error('Error generating QR Code:', err));
-  }, []);
+  const getJudgeLoginUrl = (username: string) => {
+    return `${APP_URL}/?username=${encodeURIComponent(username || '')}`;
+  };
 
   // All valid non-admin judges
   const allEligibleJudges = useMemo(() => {
     return (judges || []).filter((j) => j && !(j.role === 'ADMIN' && j.username === 'admin'));
   }, [judges]);
+
+  // Generate QR code Data URL for each judge on mount or when judges change
+  useEffect(() => {
+    if (!isOpen) return;
+    let isMounted = true;
+
+    const generateAllQrs = async () => {
+      const newMap: Record<string, string> = {};
+      for (const j of allEligibleJudges) {
+        if (!j || !j.id) continue;
+        const targetUrl = getJudgeLoginUrl(j.username);
+        try {
+          const url = await QRCode.toDataURL(targetUrl, {
+            margin: 1,
+            width: 300,
+            color: {
+              dark: '#0f172a', // slate-900 navy
+              light: '#ffffff',
+            },
+          });
+          newMap[j.id] = url;
+        } catch (err) {
+          console.error('Error generating QR Code for judge:', j.username, err);
+        }
+      }
+      if (isMounted) {
+        setQrMap(newMap);
+      }
+    };
+
+    generateAllQrs();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [isOpen, allEligibleJudges]);
 
   // Filtered judges according to Category & Search
   const filteredJudges = useMemo(() => {
@@ -122,7 +148,7 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
   const judgesToPrint = filteredJudges.filter((j) => selectedJudgeIds.includes(j.id));
 
   // Generate A4 PDF Cards using jsPDF
-  const handleDownloadPDF = () => {
+  const handleDownloadPDF = async () => {
     if (judgesToPrint.length === 0) {
       alert('Pilih minimal 1 juri yang ingin dicetak kartunya.');
       return;
@@ -143,7 +169,8 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
     const gapX = 6; // mm
     const gapY = 8; // mm
 
-    judgesToPrint.forEach((j, index) => {
+    for (let index = 0; index < judgesToPrint.length; index++) {
+      const j = judgesToPrint[index];
       const pageIndex = Math.floor(index / (cols * rows));
       const cardIndexOnPage = index % (cols * rows);
 
@@ -241,9 +268,23 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
       doc.setDrawColor(203, 213, 225);
       doc.roundedRect(qrBoxX, qrBoxY, qrBoxWidth, qrBoxHeight, 2, 2, 'FD');
 
-      // Render QR Code Image if available
-      if (qrCodeDataUrl) {
-        doc.addImage(qrCodeDataUrl, 'PNG', qrBoxX + 1.5, qrBoxY + 1.5, 22, 22);
+      // Get or dynamically create judge-specific QR code
+      let judgeQrUrl = qrMap[j.id];
+      if (!judgeQrUrl) {
+        try {
+          judgeQrUrl = await QRCode.toDataURL(getJudgeLoginUrl(j.username), {
+            margin: 1,
+            width: 300,
+            color: { dark: '#0f172a', light: '#ffffff' },
+          });
+        } catch (err) {
+          console.error('Error generating PDF QR:', err);
+        }
+      }
+
+      // Render QR Code Image
+      if (judgeQrUrl) {
+        doc.addImage(judgeQrUrl, 'PNG', qrBoxX + 1.5, qrBoxY + 1.5, 22, 22);
       }
 
       doc.setTextColor(15, 23, 42);
@@ -255,8 +296,8 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
       doc.setTextColor(100, 116, 139); // slate-500
       doc.setFont('helvetica', 'bold');
       doc.setFontSize(5.5);
-      doc.text('Helpdesk WA Admin: 089625029588 | *Scan QR untuk mengisi nilai', x + cardWidth / 2, y + 78, { align: 'center' });
-    });
+      doc.text('Helpdesk WA: 089625029588 | *Scan QR otomatis isi username juri', x + cardWidth / 2, y + 78, { align: 'center' });
+    }
 
     doc.save(`Kartu_Login_Juri_Pramuka_${Date.now()}.pdf`);
   };
@@ -266,7 +307,8 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
   };
 
   const handleCopyCredentials = (j: Judge) => {
-    const text = `⚜️ *AKUN LOGIN JURI PRAMUKA*\nNama: ${j?.name || 'Juri'}\nPos: ${getPosName(j)}\nKategori: ${getReguLabel(j?.assignedCategory)}\nLink: ${APP_URL}\n\nUsername: *${j?.username || '-'}*\nPassword: *${j?.password || 'juri123'}*\n\n💬 Helpdesk WA Admin: 089625029588`;
+    const directUrl = getJudgeLoginUrl(j?.username || '');
+    const text = `⚜️ *AKUN LOGIN JURI PRAMUKA*\nNama: ${j?.name || 'Juri'}\nPos: ${getPosName(j)}\nKategori: ${getReguLabel(j?.assignedCategory)}\nLink Langsung: ${directUrl}\n\nUsername: *${j?.username || '-'}*\nPassword: *${j?.password || 'juri123'}*\n\n*(Buka link langsung di HP untuk otomatis mengisi username juri)*\n💬 Helpdesk WA Admin: 089625029588`;
     navigator.clipboard.writeText(text);
     setCopiedId(j.id);
     setTimeout(() => setCopiedId(null), 2000);
@@ -500,14 +542,14 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
 
                       {/* Right: QR Code */}
                       <div className="w-20 bg-white border border-slate-200 rounded-xl p-1 flex flex-col items-center justify-center shrink-0">
-                        {qrCodeDataUrl ? (
+                        {qrMap[j.id] ? (
                           <img
-                            src={qrCodeDataUrl}
-                            alt="QR Code Log In"
+                            src={qrMap[j.id]}
+                            alt={`QR Code Log In ${j.username}`}
                             className="w-14 h-14 object-contain"
                           />
                         ) : (
-                          <QrCode className="w-10 h-10 text-slate-300" />
+                          <QrCode className="w-10 h-10 text-slate-300 animate-pulse" />
                         )}
                         <span className="text-[7px] font-black text-slate-800 uppercase tracking-tight mt-0.5">
                           SCAN LOG IN
@@ -518,7 +560,7 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
 
                   {/* Footer Card */}
                   <div className="bg-slate-50 px-3 py-1.5 text-center text-[8.5px] font-semibold text-slate-500 border-t border-slate-100 flex items-center justify-between gap-1">
-                    <span className="truncate text-slate-400">*Scan QR untuk login</span>
+                    <span className="truncate text-slate-400">*Scan QR otomatis isi username</span>
                     <a
                       href="https://wa.me/6289625029588"
                       target="_blank"
