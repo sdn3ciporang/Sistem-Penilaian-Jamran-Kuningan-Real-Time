@@ -160,14 +160,17 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
       format: 'a4',
     });
 
+    // Standard 3.5 x 2 inch card format:
+    // 3.5 in = 88.9 mm, 2.0 in = 50.8 mm
+    // A4 layout (210 x 297 mm): 2 columns x 5 rows = 10 cards per page
     const cols = 2;
-    const rows = 3;
-    const cardWidth = 90; // mm
-    const cardHeight = 82; // mm
-    const startX = 12; // mm
-    const startY = 12; // mm
-    const gapX = 6; // mm
-    const gapY = 8; // mm
+    const rows = 5;
+    const cardWidth = 88.9; // mm (3.5 in)
+    const cardHeight = 50.8; // mm (2.0 in)
+    const startX = 12.1; // mm ((210 - (2*88.9 + 8))/2)
+    const startY = 9.5; // mm ((297 - (5*50.8 + 4*6))/2)
+    const gapX = 8.0; // mm
+    const gapY = 6.0; // mm
 
     for (let index = 0; index < judgesToPrint.length; index++) {
       const j = judgesToPrint[index];
@@ -190,83 +193,83 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
       // 1. Card Container Outer Border & Background
       doc.setDrawColor(203, 213, 225); // slate-300
       doc.setFillColor(255, 255, 255);
-      doc.roundedRect(x, y, cardWidth, cardHeight, 3.5, 3.5, 'FD');
+      doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, 'FD');
 
-      // 2. Scout Navy Header Bar
+      // 2. Scout Navy Header Bar (Compact 9.5mm height)
       doc.setFillColor(15, 23, 42); // slate-900 / navy
-      doc.roundedRect(x, y, cardWidth, 16, 3.5, 3.5, 'F');
-      doc.rect(x, y + 10, cardWidth, 6, 'F'); // flatten bottom radius of header
+      doc.roundedRect(x, y, cardWidth, 9.5, 2.5, 2.5, 'F');
+      doc.rect(x, y + 6, cardWidth, 3.5, 'F'); // flatten bottom radius of header
 
       // Gold Accent Strip
       doc.setFillColor(217, 119, 6); // amber-600
-      doc.rect(x, y + 16, cardWidth, 1.2, 'F');
+      doc.rect(x, y + 9.5, cardWidth, 0.8, 'F');
 
       // Header Text
       doc.setTextColor(253, 224, 71); // amber-300
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(9.5);
-      doc.text('KARTU LOGIN JURI LOMBA', x + cardWidth / 2, y + 6.5, { align: 'center' });
+      doc.setFontSize(7.5);
+      doc.text('KARTU LOGIN JURI LOMBA', x + cardWidth / 2, y + 4.5, { align: 'center' });
 
       doc.setTextColor(255, 255, 255);
       doc.setFont('helvetica', 'normal');
-      doc.setFontSize(6.5);
-      doc.text('JAMRAN KWARAN KUNINGAN', x + cardWidth / 2, y + 12, { align: 'center' });
+      doc.setFontSize(5.5);
+      doc.text('JAMRAN KWARAN KUNINGAN', x + cardWidth / 2, y + 8, { align: 'center' });
 
       // 3. Nama Juri Section
       doc.setTextColor(15, 23, 42);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(10.5);
-      const nameText = j.name.length > 28 ? j.name.substring(0, 26) + '...' : j.name;
-      doc.text(nameText, x + 5, y + 23.5);
+      doc.setFontSize(8.5);
+      const nameText = j.name.length > 26 ? j.name.substring(0, 24) + '...' : j.name;
+      doc.text(nameText, x + 3.5, y + 14.5);
 
       // 4. Penugasan Pos Box
       doc.setFillColor(241, 245, 249); // slate-100
-      doc.setDrawColor(203, 213, 225);
-      doc.roundedRect(x + 5, y + 26, cardWidth - 10, 11, 1.5, 1.5, 'FD');
+      doc.setDrawColor(226, 232, 240);
+      doc.roundedRect(x + 3, y + 16.5, 57, 8, 1.2, 1.2, 'FD');
 
       doc.setTextColor(30, 58, 138); // blue-900
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      const posText = posName.length > 34 ? posName.substring(0, 32) + '...' : posName;
-      doc.text(`POS : ${posText}`, x + 7, y + 30.5);
+      doc.setFontSize(6.2);
+      const posText = posName.length > 32 ? posName.substring(0, 30) + '...' : posName;
+      doc.text(`POS : ${posText}`, x + 4.5, y + 20);
 
       doc.setTextColor(71, 85, 105); // slate-600
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(6.5);
-      doc.text(`Kategori : ${reguText}`, x + 7, y + 34.5);
+      doc.setFontSize(5.5);
+      doc.text(`Kategori : ${reguText}`, x + 4.5, y + 23.2);
 
-      // 5. Credentials Box (Left side) & QR Code (Right side)
-      const credWidth = 53; // mm
-      const credHeight = 31; // mm
-      const credX = x + 5;
-      const credY = y + 39;
+      // 5. Credentials Box (Left side)
+      const credWidth = 57; // mm
+      const credHeight = 18.5; // mm
+      const credX = x + 3;
+      const credY = y + 26;
 
       doc.setFillColor(254, 243, 199); // amber-100
       doc.setDrawColor(245, 158, 11); // amber-500
-      doc.roundedRect(credX, credY, credWidth, credHeight, 2, 2, 'FD');
+      doc.roundedRect(credX, credY, credWidth, credHeight, 1.5, 1.5, 'FD');
 
       doc.setTextColor(146, 64, 14); // amber-800
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(7.5);
-      doc.text('AKUN LOGIN PENILAIAN:', credX + 3, credY + 5);
+      doc.setFontSize(5.5);
+      doc.text('AKUN LOGIN PENILAIAN:', credX + 2.5, credY + 4);
 
       doc.setTextColor(15, 23, 42);
       doc.setFont('courier', 'bold');
-      doc.setFontSize(9);
-      doc.text(`USER : ${j?.username || '-'}`, credX + 3, credY + 13);
+      doc.setFontSize(7.5);
+      doc.text(`USER : ${j?.username || '-'}`, credX + 2.5, credY + 10);
 
       const pwd = j.password || 'juri123';
-      doc.text(`PASS : ${pwd}`, credX + 3, credY + 22);
+      doc.text(`PASS : ${pwd}`, credX + 2.5, credY + 16);
 
       // QR Code Box (Right Side)
-      const qrBoxX = x + 60;
-      const qrBoxY = y + 39;
-      const qrBoxWidth = 25; // mm
-      const qrBoxHeight = 31; // mm
+      const qrBoxX = x + 62;
+      const qrBoxY = y + 11.5;
+      const qrBoxWidth = 23.5; // mm
+      const qrBoxHeight = 33; // mm
 
       doc.setFillColor(255, 255, 255);
       doc.setDrawColor(203, 213, 225);
-      doc.roundedRect(qrBoxX, qrBoxY, qrBoxWidth, qrBoxHeight, 2, 2, 'FD');
+      doc.roundedRect(qrBoxX, qrBoxY, qrBoxWidth, qrBoxHeight, 1.5, 1.5, 'FD');
 
       // Get or dynamically create judge-specific QR code
       let judgeQrUrl = qrMap[j.id];
@@ -284,22 +287,32 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
 
       // Render QR Code Image
       if (judgeQrUrl) {
-        doc.addImage(judgeQrUrl, 'PNG', qrBoxX + 1.5, qrBoxY + 1.5, 22, 22);
+        doc.addImage(judgeQrUrl, 'PNG', qrBoxX + 1.75, qrBoxY + 2, 20, 20);
       }
 
       doc.setTextColor(15, 23, 42);
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(5.5);
-      doc.text('SCAN LOG IN', qrBoxX + qrBoxWidth / 2, qrBoxY + 27.5, { align: 'center' });
+      doc.setFontSize(5.2);
+      doc.text('SCAN LOG IN', qrBoxX + qrBoxWidth / 2, qrBoxY + 26, { align: 'center' });
 
-      // 6. Card Footer
+      doc.setTextColor(30, 58, 138);
+      doc.setFontSize(4.2);
+      doc.text('Auto Username', qrBoxX + qrBoxWidth / 2, qrBoxY + 30, { align: 'center' });
+
+      // 6. Card Footer Bar
+      doc.setFillColor(248, 250, 252);
+      doc.rect(x, y + 46, cardWidth, 4.8, 'F');
+      doc.setDrawColor(203, 213, 225);
+      doc.line(x, y + 46, x + cardWidth, y + 46);
+      doc.roundedRect(x, y, cardWidth, cardHeight, 2.5, 2.5, 'D'); // crisp outer boundary
+
       doc.setTextColor(100, 116, 139); // slate-500
       doc.setFont('helvetica', 'bold');
-      doc.setFontSize(5.5);
-      doc.text('Helpdesk WA: 089625029588 | *Scan QR otomatis isi username juri', x + cardWidth / 2, y + 78, { align: 'center' });
+      doc.setFontSize(4.8);
+      doc.text('Helpdesk WA: 089625029588 | *Ukuran 3.5 x 2 Inci (10 Kartu / Lembar A4)', x + cardWidth / 2, y + 49.5, { align: 'center' });
     }
 
-    doc.save(`Kartu_Login_Juri_Pramuka_${Date.now()}.pdf`);
+    doc.save(`Kartu_Login_Juri_3.5x2_Inci_${Date.now()}.pdf`);
   };
 
   const handlePrintBrowser = () => {
@@ -325,14 +338,17 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
               ⚜️
             </div>
             <div>
-              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-2">
+              <h2 className="text-base sm:text-lg font-black text-slate-900 tracking-tight flex items-center gap-2 flex-wrap">
                 <span>Cetak Kartu Login Juri (PDF & QR)</span>
+                <span className="bg-blue-100 text-blue-900 text-xs px-2.5 py-0.5 rounded-full font-bold border border-blue-200">
+                  📐 3.5" x 2" (ID Card)
+                </span>
                 <span className="bg-amber-100 text-amber-900 text-xs px-2.5 py-0.5 rounded-full font-bold">
                   {judgesToPrint.length} Dipilih
                 </span>
               </h2>
-              <p className="text-xs text-slate-500">
-                Pilih juri yang mau dicetak, lalu klik Download PDF atau Cetak.
+              <p className="text-xs text-slate-500 mt-0.5">
+                Format standar kartu nama / ID card (3.5 x 2 inci). Muat 10 kartu juri per lembar kertas A4 siap cetak & potong.
               </p>
             </div>
           </div>
@@ -507,17 +523,22 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
                   </div>
 
                   {/* Card Content Body */}
-                  <div className="p-3.5 space-y-2.5 flex-1 flex flex-col justify-between">
+                  <div className="p-3 space-y-2 flex-1 flex flex-col justify-between">
                     <div>
-                      <h3 className="text-xs font-black text-slate-900 leading-snug tracking-tight">
-                        {j.name}
-                      </h3>
+                      <div className="flex items-center justify-between gap-2">
+                        <h3 className="text-xs font-black text-slate-900 leading-snug tracking-tight truncate">
+                          {j.name}
+                        </h3>
+                        <span className="text-[8px] font-bold text-slate-400 border border-slate-200 px-1 py-0.5 rounded shrink-0">
+                          3.5" x 2"
+                        </span>
+                      </div>
 
-                      <div className="mt-1.5 bg-slate-100 p-2 rounded-xl border border-slate-200 space-y-0.5">
-                        <div className="text-[10px] font-extrabold text-blue-900 truncate">
+                      <div className="mt-1 bg-slate-100 p-1.5 rounded-lg border border-slate-200 space-y-0.5">
+                        <div className="text-[9.5px] font-extrabold text-blue-900 truncate">
                           📍 POS: {posName}
                         </div>
-                        <div className="text-[9px] font-bold text-slate-600 truncate">
+                        <div className="text-[8.5px] font-bold text-slate-600 truncate">
                           👥 Kategori: {reguLabel}
                         </div>
                       </div>
@@ -526,32 +547,32 @@ export const JudgeCardsModal: React.FC<JudgeCardsModalProps> = ({
                     {/* Credentials Box + QR Code Side-by-Side */}
                     <div className="flex gap-2 items-stretch">
                       {/* Left: Credentials */}
-                      <div className="flex-1 bg-amber-50 border-2 border-dashed border-amber-400 p-2 rounded-xl space-y-1">
-                        <div className="text-[8px] font-black text-amber-900 uppercase tracking-wider">
+                      <div className="flex-1 bg-amber-50 border border-amber-300 p-1.5 rounded-lg space-y-1">
+                        <div className="text-[7.5px] font-black text-amber-900 uppercase tracking-wider">
                           AKUN PENILAIAN:
                         </div>
-                        <div className="font-mono text-[10px] font-bold text-slate-900 flex justify-between items-center bg-white px-2 py-0.5 rounded border border-amber-200">
-                          <span className="text-slate-400 text-[9px]">USER:</span>
+                        <div className="font-mono text-[9.5px] font-bold text-slate-900 flex justify-between items-center bg-white px-1.5 py-0.5 rounded border border-amber-200">
+                          <span className="text-slate-400 text-[8px]">USER:</span>
                           <span className="text-blue-900 font-black">{j?.username || '-'}</span>
                         </div>
-                        <div className="font-mono text-[10px] font-bold text-slate-900 flex justify-between items-center bg-white px-2 py-0.5 rounded border border-amber-200">
-                          <span className="text-slate-400 text-[9px]">PASS:</span>
+                        <div className="font-mono text-[9.5px] font-bold text-slate-900 flex justify-between items-center bg-white px-1.5 py-0.5 rounded border border-amber-200">
+                          <span className="text-slate-400 text-[8px]">PASS:</span>
                           <span className="text-emerald-800 font-black">{pwd}</span>
                         </div>
                       </div>
 
                       {/* Right: QR Code */}
-                      <div className="w-20 bg-white border border-slate-200 rounded-xl p-1 flex flex-col items-center justify-center shrink-0">
+                      <div className="w-18 bg-white border border-slate-200 rounded-lg p-1 flex flex-col items-center justify-center shrink-0">
                         {qrMap[j.id] ? (
                           <img
                             src={qrMap[j.id]}
                             alt={`QR Code Log In ${j.username}`}
-                            className="w-14 h-14 object-contain"
+                            className="w-12 h-12 object-contain"
                           />
                         ) : (
                           <QrCode className="w-10 h-10 text-slate-300 animate-pulse" />
                         )}
-                        <span className="text-[7px] font-black text-slate-800 uppercase tracking-tight mt-0.5">
+                        <span className="text-[6.5px] font-black text-slate-800 uppercase tracking-tight mt-0.5">
                           SCAN LOG IN
                         </span>
                       </div>
