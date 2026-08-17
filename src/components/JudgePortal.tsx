@@ -67,7 +67,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
   const [scoreInput, setScoreInput] = useState<string>('');
   const [notesInput, setNotesInput] = useState<string>('');
   const [capturedTimeMs, setCapturedTimeMs] = useState<number>(0);
-  const [capturedTimeFormatted, setCapturedTimeFormatted] = useState<string>('00:00:000');
+  const [capturedTimeFormatted, setCapturedTimeFormatted] = useState<string>('00:00');
   
   // UI Status
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -159,13 +159,13 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
         setCapturedTimeFormatted(existingScoreRecord.timeFormatted);
       } else {
         setCapturedTimeMs(0);
-        setCapturedTimeFormatted('00:00:000');
+        setCapturedTimeFormatted('00:00');
       }
     } else {
       setScoreInput('');
       setNotesInput('');
       setCapturedTimeMs(0);
-      setCapturedTimeFormatted('00:00:000');
+      setCapturedTimeFormatted('00:00');
     }
   }, [existingScoreRecord, selectedSchoolId, selectedCategory, competitionHasTime]);
 
@@ -190,13 +190,13 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
       setCapturedTimeFormatted(timeFormatted);
     } else {
       setCapturedTimeMs(0);
-      setCapturedTimeFormatted('00:00:000');
+      setCapturedTimeFormatted('00:00');
     }
   };
 
   const handleClearTimeOnly = async () => {
     if (!existingScoreRecord) return;
-    if (!confirm(`Clear / Hapus catatan waktu untuk ${selectedSchool?.name}? Waktu akan di-reset menjadi 00:00:000.`)) return;
+    if (!confirm(`Clear / Hapus catatan waktu untuk ${selectedSchool?.name}? Waktu akan di-reset menjadi 00:00.`)) return;
 
     setIsSubmitting(true);
     try {
@@ -207,15 +207,15 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
         subPostId: assignedSubPost?.id,
         score: existingScoreRecord.score,
         timeInMs: 0,
-        timeFormatted: '00:00:000',
+        timeFormatted: '00:00',
         judgeId: currentJudge.id,
         judgeName: currentJudge.name,
         posName: posTitle,
       });
 
       setCapturedTimeMs(0);
-      setCapturedTimeFormatted('00:00:000');
-      showToast(`Catatan waktu ${selectedSchool?.name} berhasil dihapus/direset menjadi 00:00:000.`, 'success');
+      setCapturedTimeFormatted('00:00');
+      showToast(`Catatan waktu ${selectedSchool?.name} berhasil dihapus/direset menjadi 00:00.`, 'success');
       onScoreSaved();
     } catch (err: any) {
       showToast(err.message || 'Gagal mereset waktu', 'error');
@@ -235,7 +235,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
       setSelectedSchoolId('');
       setScoreInput('');
       setCapturedTimeMs(0);
-      setCapturedTimeFormatted('00:00:000');
+      setCapturedTimeFormatted('00:00');
       onScoreSaved();
     } catch (err: any) {
       showToast(err.message || 'Gagal menghapus nilai', 'error');
@@ -272,7 +272,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
     }
 
     const timeMsToSave = competitionHasTime ? capturedTimeMs : 0;
-    const timeFormattedToSave = competitionHasTime ? capturedTimeFormatted : '00:00:000';
+    const timeFormattedToSave = competitionHasTime ? capturedTimeFormatted : '00:00';
 
     setIsSubmitting(true);
     try {
@@ -302,7 +302,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
       setScoreInput('');
       setNotesInput('');
       setCapturedTimeMs(0);
-      setCapturedTimeFormatted('00:00:000');
+      setCapturedTimeFormatted('00:00');
 
       onScoreSaved(result.scoreRecord);
     } catch (err: any) {
@@ -447,7 +447,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
                 setSelectedSchoolId('');
                 setScoreInput('');
                 setCapturedTimeMs(0);
-                setCapturedTimeFormatted('00:00:000');
+                setCapturedTimeFormatted('00:00');
               }}
               className="w-full px-3.5 py-2.5 text-xs font-extrabold text-amber-950 bg-amber-50/80 border-2 border-amber-300 rounded-xl focus:ring-2 focus:ring-amber-500 focus:outline-none cursor-pointer shadow-2xs"
             >
@@ -601,7 +601,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
             <div className="flex items-start justify-between gap-2">
               <div className="flex items-center gap-2 font-bold">
                 <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
-                <span>Pangkalan ini sudah memiliki nilai recorded: <strong className="text-amber-900 text-sm font-black">{existingScoreRecord.score}</strong> {existingScoreRecord.timeFormatted !== '00:00:000' && `(Waktu: ${existingScoreRecord.timeFormatted})`}</span>
+                <span>Pangkalan ini sudah memiliki nilai recorded: <strong className="text-amber-900 text-sm font-black">{existingScoreRecord.score}</strong> {existingScoreRecord.timeFormatted && !existingScoreRecord.timeFormatted.startsWith('00:00') && `(Waktu: ${existingScoreRecord.timeFormatted})`}</span>
               </div>
             </div>
 
@@ -671,7 +671,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
             {capturedTimeMs > 0 ? (
               <div className="mt-2 text-xs text-emerald-800 font-medium flex items-center gap-1.5 bg-emerald-50 border border-emerald-200 p-2.5 rounded-lg">
                 <Clock className="w-4 h-4 text-emerald-600 shrink-0" />
-                <span>Waktu Terekam: <strong className="font-mono text-emerald-950 font-black text-sm">{capturedTimeFormatted}</strong> ({capturedTimeMs} ms)</span>
+                <span>Waktu Terekam: <strong className="font-mono text-emerald-950 font-black text-sm">{capturedTimeFormatted}</strong> ({Math.floor(capturedTimeMs / 60000)}m {Math.floor((capturedTimeMs % 60000) / 1000)}s)</span>
               </div>
             ) : (
               <div className="mt-2 text-xs text-rose-700 font-bold flex items-center gap-1.5 bg-rose-50 border border-rose-200 p-2.5 rounded-lg">
@@ -691,7 +691,7 @@ export const JudgePortal: React.FC<JudgePortalProps> = ({
                 <TimerOff className="w-4 h-4 text-slate-500 shrink-0" />
                 <span>Perlombaan ini diatur <strong>TANPA catatan waktu</strong> (Fitur waktu nonaktif/dihapus untuk lomba ini).</span>
               </div>
-              <span className="text-[11px] font-mono font-bold bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg shrink-0">00:00:000</span>
+              <span className="text-[11px] font-mono font-bold bg-slate-200 text-slate-700 px-2.5 py-1 rounded-lg shrink-0">00:00</span>
             </div>
           </div>
         )}

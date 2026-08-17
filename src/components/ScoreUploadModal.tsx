@@ -40,19 +40,18 @@ interface ParsedScoreRow {
   errorMessage?: string;
 }
 
-// Helper time formatter & parser
+// Helper time formatter & parser (Minutes and Seconds only)
 function formatMsToString(ms: number): string {
-  if (!ms || ms <= 0) return '00:00:000';
+  if (!ms || ms <= 0) return '00:00';
   const totalSeconds = Math.floor(ms / 1000);
   const m = Math.floor(totalSeconds / 60);
   const s = totalSeconds % 60;
-  const milli = Math.floor(ms % 1000);
-  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}:${String(milli).padStart(3, '0')}`;
+  return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
 }
 
 function parseTimeToMsAndFormatted(val: any): { timeInMs: number; timeFormatted: string } {
   if (val === undefined || val === null || String(val).trim() === '') {
-    return { timeInMs: 0, timeFormatted: '00:00:000' };
+    return { timeInMs: 0, timeFormatted: '00:00' };
   }
 
   const str = String(val).trim();
@@ -103,7 +102,7 @@ function parseTimeToMsAndFormatted(val: any): { timeInMs: number; timeFormatted:
     return { timeInMs: totalMs, timeFormatted: formatMsToString(totalMs) };
   }
 
-  return { timeInMs: 0, timeFormatted: '00:00:000' };
+  return { timeInMs: 0, timeFormatted: '00:00' };
 }
 
 export const ScoreUploadModal: React.FC<ScoreUploadModalProps> = ({
@@ -481,7 +480,7 @@ export const ScoreUploadModal: React.FC<ScoreUploadModalProps> = ({
           subPostId: r.subPostId,
           score: r.score,
           timeInMs: r.timeInMs || 0,
-          timeFormatted: r.timeFormatted || '00:00:000',
+          timeFormatted: r.timeFormatted || '00:00',
           judgeId: 'admin_upload',
           judgeName: 'Administrator (Import Excel)',
           posName: r.posName,
@@ -715,10 +714,10 @@ export const ScoreUploadModal: React.FC<ScoreUploadModalProps> = ({
                       <td className="p-2.5 font-semibold text-slate-800">{row.posName}</td>
                       <td className="p-2.5 text-center font-mono font-black text-indigo-700">{row.score}</td>
                       <td className="p-2.5 text-center">
-                        {row.timeFormatted && row.timeFormatted !== '00:00:000' ? (
+                        {row.timeFormatted && !row.timeFormatted.startsWith('00:00') ? (
                           <span className="inline-flex items-center gap-1 bg-amber-50 text-amber-900 border border-amber-200 px-2 py-0.5 rounded font-mono font-bold text-[11px]">
                             <Clock className="w-3 h-3 text-amber-600" />
-                            {row.timeFormatted}
+                            {row.timeFormatted.includes(':') ? row.timeFormatted.split(':').slice(0, 2).join(':') : row.timeFormatted}
                           </span>
                         ) : (
                           <span className="text-slate-400 font-mono text-[11px]">-</span>

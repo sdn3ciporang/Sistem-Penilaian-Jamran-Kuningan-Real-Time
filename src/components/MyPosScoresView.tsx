@@ -430,9 +430,9 @@ export const MyPosScoresView: React.FC<MyPosScoresViewProps> = ({
                       {/* Time if enabled */}
                       {hasTimeSetting && (
                         <td className="py-3 px-4 text-center">
-                          {isScored && rec.timeFormatted && rec.timeFormatted !== '00:00:000' ? (
+                          {isScored && rec.timeFormatted && !rec.timeFormatted.startsWith('00:00') ? (
                             <span className="font-mono text-slate-800 font-bold bg-slate-100 px-2 py-1 rounded border border-slate-200 text-xs">
-                              ⏱ {rec.timeFormatted}
+                              ⏱ {rec.timeFormatted.includes(':') ? rec.timeFormatted.split(':').slice(0, 2).join(':') : rec.timeFormatted}
                             </span>
                           ) : (
                             <span className="text-slate-300 italic text-[11px]">-</span>

@@ -172,12 +172,11 @@ export const RekapView: React.FC<RekapViewProps> = ({ schools, competitions, sco
     }
   };
 
-  // Helper time formatter
+  // Helper time formatter (Minutes and Seconds only)
   const formatMs = (ms: number) => {
     const m = Math.floor(ms / 60000);
     const s = Math.floor((ms % 60000) / 1000);
-    const mmm = ms % 1000;
-    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}:${String(mmm).padStart(3, '0')}`;
+    return `${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}`;
   };
 
   // Calculate Rekap Data Matrix
