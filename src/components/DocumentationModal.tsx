@@ -140,7 +140,7 @@ export const DocumentationModal: React.FC<DocumentationModalProps> = ({ isOpen, 
                 <div className="flex items-start gap-3">
                   <div className="w-6 h-6 rounded-full bg-blue-600 text-white font-bold flex items-center justify-center shrink-0">2</div>
                   <div>
-                    <strong className="text-slate-900">Input Nilai & Stopwatch:</strong> Juri memilih Regu (Putra/Putri), memilih Pangkalan (55 sekolah), memasukkan Nilai, dan mencatat Waktu (Menit & Detik: MM:SS).
+                    <strong className="text-slate-900">Input Nilai & Stopwatch:</strong> Juri memilih Regu (Putra/Putri), memilih Pangkalan (55 sekolah), memasukkan Nilai, dan menekan Stopwatch (MM:SS:mmm).
                   </div>
                 </div>
                 <div className="flex items-start gap-3">

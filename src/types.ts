@@ -53,7 +53,7 @@ export interface ScoreRecord {
   subPostId?: string;
   score: number;
   timeInMs: number; // Stopwatch time in milliseconds
-  timeFormatted: string; // MM:SS (Menit:Detik)
+  timeFormatted: string; // MM:SS:mmm
   notes?: string; // Catatan juri / alasan nilai
   judgeId: string;
   judgeName: string;

@@ -57,9 +57,11 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
   const formatTimeParts = (ms: number) => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
+    const millis = ms % 1000;
     return {
       mm: String(minutes).padStart(2, '0'),
       ss: String(seconds).padStart(2, '0'),
+      mmm: String(millis).padStart(3, '0'),
     };
   };
 
@@ -69,26 +71,22 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
 
   const handleStop = () => {
     setIsRunning(false);
-    // Round to nearest second for clean minute and second storage
-    const totalSec = Math.floor(timeMs / 1000);
-    const roundedMs = totalSec * 1000;
-    const parts = formatTimeParts(roundedMs);
-    const formatted = `${parts.mm}:${parts.ss}`;
-    setTimeMs(roundedMs);
-    onTimeCaptured(roundedMs, formatted);
+    const parts = formatTimeParts(timeMs);
+    const formatted = `${parts.mm}:${parts.ss}:${parts.mmm}`;
+    onTimeCaptured(timeMs, formatted);
   };
 
   const handleReset = () => {
     setIsRunning(false);
     setTimeMs(0);
     setQuickInput('');
-    onTimeCaptured(0, '00:00');
+    onTimeCaptured(0, '00:00:000');
   };
 
-  // Helper time parser with automatic formatting (Minutes and Seconds only)
+  // Helper time parser with automatic formatting
   const parseTimeFromInput = (raw: string) => {
     if (!raw || !raw.trim()) {
-      return { totalMs: 0, formatted: '00:00', m: 0, s: 0, displayShort: '' };
+      return { totalMs: 0, formatted: '00:00:000', m: 0, s: 0, displayShort: '' };
     }
 
     let cleaned = raw.trim().replace(/,/g, '.').replace(/:/g, '.');
@@ -125,7 +123,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
     const totalMs = (m * 60000) + (safeSec * 1000);
     const mmStr = String(m).padStart(2, '0');
     const ssStr = String(safeSec).padStart(2, '0');
-    const formatted = `${mmStr}:${ssStr}`;
+    const formatted = `${mmStr}:${ssStr}:000`;
     const displayShort = `${mmStr}.${ssStr}`;
 
     return { totalMs, formatted, m, s: safeSec, displayShort };
@@ -175,10 +173,10 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
     const s = totalSec % 60;
     const mmStr = String(m).padStart(2, '0');
     const ssStr = String(s).padStart(2, '0');
-    onTimeCaptured(totalMs, `${mmStr}:${ssStr}`);
+    onTimeCaptured(totalMs, `${mmStr}:${ssStr}:000`);
   };
 
-  const { mm, ss } = formatTimeParts(timeMs);
+  const { mm, ss, mmm } = formatTimeParts(timeMs);
 
   return (
     <div className="bg-slate-900 text-white rounded-2xl p-4 sm:p-5 shadow-xl border border-slate-800 space-y-4">
@@ -186,33 +184,35 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
       <div className="flex items-center justify-between border-b border-slate-800 pb-3">
         <div className="flex items-center gap-1.5 text-amber-400 text-xs uppercase tracking-wider font-extrabold">
           <Clock className="w-4 h-4 text-amber-400" />
-          <span>STOPWATCH & KETIK CEPAT WAKTU (MENIT & DETIK)</span>
+          <span>STOPWATCH & KETIK CEPAT WAKTU</span>
         </div>
         <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${isRunning ? 'bg-emerald-500/20 text-emerald-400 animate-pulse' : 'bg-slate-800 text-slate-400'}`}>
           {isRunning ? '▶ RUNNING' : '⏸ IDLE'}
         </span>
       </div>
 
-      {/* BLOCK 1: DIGITAL STOPWATCH TIMER (MENIT & DETIK) */}
+      {/* BLOCK 1: DIGITAL STOPWATCH TIMER */}
       <div className="space-y-3 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
         <div className="text-[11px] font-bold text-slate-400 uppercase tracking-wider flex items-center justify-between">
           <span className="flex items-center gap-1 text-sky-400">
             <Timer className="w-3.5 h-3.5" />
             1. Digital Stopwatch Timer
           </span>
-          <span className="text-[10px] text-slate-400 font-normal">Format: Menit : Detik</span>
         </div>
 
-        {/* Big Display - Minutes and Seconds Only */}
-        <div className="text-center py-3 bg-slate-900 rounded-xl border border-slate-800 font-mono select-none">
-          <div className="text-5xl sm:text-6xl font-black tracking-tight text-amber-400 flex items-baseline justify-center gap-1">
+        {/* Big Display */}
+        <div className="text-center py-2 bg-slate-900 rounded-xl border border-slate-800 font-mono select-none">
+          <div className="text-4xl sm:text-5xl font-black tracking-tight text-amber-400 flex items-baseline justify-center gap-1">
             <span>{mm}</span>
-            <span className="text-slate-600 text-4xl sm:text-5xl">:</span>
+            <span className="text-slate-600 text-3xl sm:text-4xl">:</span>
             <span>{ss}</span>
+            <span className="text-slate-600 text-3xl sm:text-4xl">:</span>
+            <span className="text-2xl sm:text-3xl text-sky-300 w-[3ch] text-left">{mmm}</span>
           </div>
-          <div className="flex justify-center text-[10px] text-slate-500 font-sans gap-12 mt-1 uppercase tracking-widest font-bold">
+          <div className="flex justify-center text-[10px] text-slate-500 font-sans gap-8 mt-1 uppercase tracking-widest font-bold">
             <span>Menit</span>
             <span>Detik</span>
+            <span>MiliSec</span>
           </div>
         </div>
 
@@ -249,12 +249,12 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
         </div>
       </div>
 
-      {/* BLOCK 2: INPUT KETIK CEPAT (MENIT & DETIK) */}
+      {/* BLOCK 2: INPUT KETIK CEPAT (TANPA INPUT TERPISAH MENIT & DETIK) */}
       <div className="space-y-3 bg-slate-950/80 p-3.5 rounded-2xl border border-slate-800">
         <div className="text-[11px] font-bold text-amber-300 uppercase tracking-wider flex items-center justify-between">
           <span className="flex items-center gap-1 text-amber-400">
             <Edit3 className="w-3.5 h-3.5" />
-            2. Input Ketik Cepat Menit & Detik
+            2. Input Ketik Cepat Format Waktu
           </span>
         </div>
 
@@ -287,7 +287,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
               <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>Format Otomatis Terdeteksi:</span>
               <span className="text-white font-black bg-emerald-950 px-2 py-0.5 rounded border border-emerald-700">
-                {parseTimeFromInput(quickInput).m} Menit {parseTimeFromInput(quickInput).s} Detik ({parseTimeFromInput(quickInput).formatted})
+                {parseTimeFromInput(quickInput).m} Menit {parseTimeFromInput(quickInput).s} Detik ({parseTimeFromInput(quickInput).displayShort})
               </span>
             </div>
           )}
@@ -305,7 +305,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
               { label: '2.00 (2 Mnt)', val: '2.00', sec: 120 },
               { label: '3.00 (3 Mnt)', val: '3.00', sec: 180 },
               { label: '5.00 (5 Mnt)', val: '5.00', sec: 300 },
-              { label: '6.30 (6m 30s)', val: '6.30', sec: 390 },
+              { label: '6.30 (6½ Mnt)', val: '6.30', sec: 390 },
               { label: '10.00 (10 Mnt)', val: '10.00', sec: 600 },
             ].map((p) => (
               <button
@@ -335,7 +335,7 @@ export const Stopwatch: React.FC<StopwatchProps> = ({ onTimeCaptured, initialTim
             <Check className="w-4 h-4 text-emerald-400 shrink-0" />
             <span>Catatan Waktu Terpilih:</span>
             <strong className="font-mono text-white text-sm bg-blue-900 px-2.5 py-0.5 rounded border border-blue-700">
-              {mm}:{ss} ({Math.floor(timeMs / 60000)}m {Math.floor((timeMs % 60000) / 1000)}s)
+              {mm}:{ss}:{mmm} ({Math.floor(timeMs / 60000)}m {Math.floor((timeMs % 60000) / 1000)}s)
             </strong>
           </div>
         </div>

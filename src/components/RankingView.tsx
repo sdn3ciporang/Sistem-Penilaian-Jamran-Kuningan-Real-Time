@@ -83,12 +83,13 @@ export const RankingView: React.FC<RankingViewProps> = ({
     }
   }, [settings?.rankingLimit]);
 
-  // Helper time formatter (Minutes and Seconds only)
+  // Helper time formatter
   const formatMs = (timeMs: number) => {
     if (!timeMs || timeMs <= 0) return '-';
     const minutes = Math.floor(timeMs / 60000);
     const seconds = Math.floor((timeMs % 60000) / 1000);
-    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    const millis = timeMs % 1000;
+    return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}:${String(millis).padStart(3, '0')}`;
   };
 
   // Build Pos Options list (Competitions & Sub-Posts)
